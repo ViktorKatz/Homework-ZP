@@ -1,20 +1,17 @@
-package etf.openpgp.kv180141dmd180153d;
+package etf.openpgp.kv180141dmd180153d.GUI;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class PrivateKeyRingPanel extends JPanel {
 
 	private static final long serialVersionUID = -4876447046177035242L;
 	private static final String[] columnNames = { "Timestamp", "Key ID", "Public Key", "Encripted Private Key", "User ID" };
-	private String[][] tableData = {
-			{ "Test Timestamp", "Test Key ID", "Test Public Key", "Test Encripted Private Key", "Test User ID" },
-			{ "T2est Timestamp", "T2est Key ID", "Tes2t Public Key", "Te2st Encripted Private Key", "Te2st User ID" },
-	};
 
 	private JScrollPane scrollPane;
 	private JTable table;
 
-	PrivateKeyRingPanel() {
+	PrivateKeyRingPanel(String[][] tableData) {
 		this.setLayout(null);
 		table = new JTable(tableData, columnNames);
 
@@ -22,5 +19,10 @@ public class PrivateKeyRingPanel extends JPanel {
 		scrollPane.setSize(780, 600);
 
 		this.add(scrollPane);
+	}
+	
+	public void refreshData() {
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.fireTableDataChanged();
 	}
 }

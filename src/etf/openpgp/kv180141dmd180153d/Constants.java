@@ -1,11 +1,16 @@
 package etf.openpgp.kv180141dmd180153d;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
 
-final class Constants {
-	final static List<IAsymmetricKeyAlgorithm> supportedAsymetricAlgorithms = new ArrayList<IAsymmetricKeyAlgorithm>();
-	final static List<ISymmetricKeyAlgorithm> supportedSymetricAlgorithms = new ArrayList<ISymmetricKeyAlgorithm>();
+import etf.openpgp.kv180141dmd180153d.algorithms.CAST5;
+import etf.openpgp.kv180141dmd180153d.algorithms.IAsymmetricKeyAlgorithm;
+import etf.openpgp.kv180141dmd180153d.algorithms.ISymmetricKeyAlgorithm;
+import etf.openpgp.kv180141dmd180153d.algorithms.RSA;
+import etf.openpgp.kv180141dmd180153d.algorithms.ThreeDESwithEDE;
+
+public final class Constants {
+	public final static Vector<IAsymmetricKeyAlgorithm> supportedAsymetricAlgorithms = new Vector<IAsymmetricKeyAlgorithm>();
+	public final static Vector<ISymmetricKeyAlgorithm> supportedSymetricAlgorithms = new Vector<ISymmetricKeyAlgorithm>();
 	
 	static {
 		supportedAsymetricAlgorithms.add(new RSA(1024));

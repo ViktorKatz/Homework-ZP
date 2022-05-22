@@ -1,12 +1,12 @@
-package etf.openpgp.kv180141dmd180153d;
+package etf.openpgp.kv180141dmd180153d.algorithms;
 
-public class RSA implements IAsymmetricKeyAlgorithm {
+public class RSA extends KeyAlgotithm implements IAsymmetricKeyAlgorithm {
 
 	private final int[] allowedKeySizes = { 1024, 2048, 4096 };
 	
 	private int keySize;
 
-	RSA(int keySize) {
+	public RSA(int keySize) {
 		boolean usedAllowedKeySize = false;
 		for (int allowedKeySize : allowedKeySizes) {
 			if (keySize == allowedKeySize) {
