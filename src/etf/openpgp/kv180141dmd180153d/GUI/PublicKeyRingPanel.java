@@ -1,29 +1,27 @@
 package etf.openpgp.kv180141dmd180153d.GUI;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
-public class PublicKeyRingPanel extends JPanel {
+import etf.openpgp.kv180141dmd180153d.Key;
+
+public class PublicKeyRingPanel extends KeyRingPanel {
+
 	private static final long serialVersionUID = 5633565043952864790L;
-	private static final String[] columnNames = { "Timestamp", "Key ID", "Public Key", "User ID" };
 
-	private JScrollPane scrollPane;
-	private JTable table;
-
-	PublicKeyRingPanel(String[][] tableData) {
-		this.setLayout(null);
-		table = new JTable(tableData, columnNames);
-
-		scrollPane = new JScrollPane(table);
-		scrollPane.setSize(780, 600);
-
-		this.add(scrollPane);
+	@Override
+	protected void setColumnNames() {
+		columnNames = new String[] { "Timestamp", "Key ID", "Public Key", "User ID" };
 	}
-
-	public void refreshData() {
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		model.fireTableDataChanged();
+	
+	PublicKeyRingPanel(Vector<Key> keys) {
+		super(keys.stream().map( k -> {
+			return new String[] {
+					k.getTimestampString(),
+					k.getKeyID(),
+					k.getPublicKey(),
+					k.getEmail()
+					};
+		} ).collect(Collectors.toList()) );
 	}
 }
