@@ -26,12 +26,12 @@ public class WindowMain extends JFrame {
 	private Vector<Key> privateKeys = new Vector<Key>();
 	private Vector<Key> publicKeys = new Vector<Key>();
 	{
-		privateKeys.add(Key.getTestKey());
-		privateKeys.add(Key.getTestKey());
-		publicKeys.add(Key.getTestKey());
-		publicKeys.add(Key.getTestKey());
-		publicKeys.add(Key.getTestKey());
-		publicKeys.add(Key.getTestKey());
+		privateKeys.add(Key.getDummytKeyObject());
+		privateKeys.add(Key.getDummytKeyObject());
+		publicKeys.add(Key.getDummytKeyObject());
+		publicKeys.add(Key.getDummytKeyObject());
+		publicKeys.add(Key.getDummytKeyObject());
+		publicKeys.add(Key.getDummytKeyObject());
 	}
 
 	private JTabbedPane tabsPane = new JTabbedPane();
