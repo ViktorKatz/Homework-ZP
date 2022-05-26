@@ -37,9 +37,9 @@ public class WindowNewKeyPair extends JFrame {
 			return false;
 		return true;
 	}
-	
+
 	private void saveKey() {
-		throw new NotImplementedException();
+		throw new NotImplementedException(); // TODO @gavantee
 	}
 
 	public WindowNewKeyPair() {
@@ -61,8 +61,7 @@ public class WindowNewKeyPair extends JFrame {
 		saveButton.addActionListener(e -> {
 			if (!isAllInfoCorrectlyEntered()) {
 				JOptionPane.showMessageDialog(this, "Please enter all params.", "Cannot create key pair", JOptionPane.WARNING_MESSAGE);
-			}
-			else {
+			} else {
 				saveKey();
 			}
 		});
