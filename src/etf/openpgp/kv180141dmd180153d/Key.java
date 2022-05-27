@@ -14,7 +14,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Key {
 	private Date timestamp;
-	private String keyName; // ne znam da li nam ovo treba
+	private String keyName;
 	private String publicKey;
 	private String email;
 	private String encriptedPrivateKey; // samo za private key.
@@ -28,11 +28,13 @@ public class Key {
 	}
 
 	public static void saveKeyRingToFile(Vector<Key> keyRing, String filepath) {
-		throw new NotImplementedException(); // TODO @gavantee:	Svi privatni idu u jedan fajl, svi public u drugi. Ovo cuvamo da ostanu kad se ugasi aplikacija
+		throw new NotImplementedException(); // TODO @gavantee (edit: @viktor instead):	Svi privatni idu u jedan fajl, svi public u drugi. Ovo cuvamo da ostanu kad se ugasi aplikacija
+		// Napomena: Ne moras ovo da radis. Mogu ja da perzistiram kljuceve pomocu serijalizacije, verovatno je lakse tako.
 	}
 	
 	public static Vector<Key> loadKeyRingFromFile(String filepath) {
-		throw new NotImplementedException(); // TODO @gavantee:	Svi privatni idu u jedan fajl, svi public u drugi. Ovo cuvamo da ostanu kad se ugasi aplikacija
+		throw new NotImplementedException(); // TODO @gavantee (edit: @viktor instead):	Svi privatni idu u jedan fajl, svi public u drugi. Ovo cuvamo da ostanu kad se ugasi aplikacija
+		// Napomena: Ne moras ovo da radis. Mogu ja da perzistiram kljuceve pomocu serijalizacije, verovatno je lakse tako.
 	}
 
 	public void exportToFile(String path) {
@@ -45,6 +47,10 @@ public class Key {
 	
 	public String decryptMessage(String encryptedMessage) {
 		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara 
+	}
+	
+	public boolean checkPassword(String password) {
+		return password.equals("123"); // TODO @gavantee
 	}
 
 	public Date getTimestamp() {
@@ -73,6 +79,11 @@ public class Key {
 
 	public String getEncriptedPrivateKey() {
 		return encriptedPrivateKey;
+	}
+	
+	@Override
+	public String toString() {
+		return keyName + " (" + email + ")";
 	}
 
 	// Samo za moje potrebe testiranja. Posle cu izbrisati kad napravis nacin da se konstruise kljuc.

@@ -44,14 +44,7 @@ public class WindowMain extends JFrame {
 		tabsPane.add("Private Key Ring", privateKeyRingTab);
 		tabsPane.add("Public Key Ring", publicKeyRingTab);
 
-		JButton newKeyPairButton = new JButton("Create new key pair");
-		newKeyPairButton.addActionListener(e -> new WindowNewKeyPair());
-		buttonPanel.add(newKeyPairButton);
-		buttonPanel.setBounds(0, horizontalBreak, windowX, windowY - horizontalBreak);
-		
-		JButton deleteSelectedKeysButton = new JButton("Delete selected keys");
-		deleteSelectedKeysButton.addActionListener(e -> deleteSelectedKeys());
-		buttonPanel.add(deleteSelectedKeysButton);
+		addButtons();
 		
 		this.add(tabsPane);
 		this.add(buttonPanel);
@@ -63,6 +56,21 @@ public class WindowMain extends JFrame {
 		this.setLayout(null);
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+	}
+	
+	private void addButtons() {
+		JButton newKeyPairButton = new JButton("Create new key pair");
+		newKeyPairButton.addActionListener(e -> new WindowNewKeyPair(this));
+		buttonPanel.add(newKeyPairButton);
+		buttonPanel.setBounds(0, horizontalBreak, windowX, windowY - horizontalBreak);
+		
+		JButton deleteSelectedKeysButton = new JButton("Delete selected keys");
+		deleteSelectedKeysButton.addActionListener(e -> deleteSelectedKeys());
+		buttonPanel.add(deleteSelectedKeysButton);
+		
+		JButton encryptMessageButton = new JButton("Send message");
+		encryptMessageButton.addActionListener(e -> new WindowEncryptMessage(this, publicKeys, privateKeys));
+		buttonPanel.add(encryptMessageButton);
 	}
 	
 	public void loadDataFromDisk() {
@@ -88,8 +96,8 @@ public class WindowMain extends JFrame {
 			System.out.print(" " + sk);
 		System.out.println();
 		
-		throw new NotImplementedException(); // TODO @viktor: kad dragan uradi kljuceve, izbrisi sacuvane
-		// saveDataToDisk();
+		throw new NotImplementedException(); // TODO @viktor: kad dragan uradi kljuceve, izbrisi selektovane
+		// saveDataToDisk(); // Flush data
 	}
 
 	public static void main(String[] args) {
