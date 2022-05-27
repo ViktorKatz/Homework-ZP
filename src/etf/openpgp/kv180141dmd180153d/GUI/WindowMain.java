@@ -76,6 +76,10 @@ public class WindowMain extends JFrame {
 		JButton importKeyButton = new JButton("Import foreign private key");
 		importKeyButton.addActionListener(e -> importPublicKey());
 		buttonPanel.add(importKeyButton);
+		
+		JButton exportKeyButton = new JButton("Export public key from private key");
+		exportKeyButton.addActionListener(e -> exportPrivateKey());
+		buttonPanel.add(exportKeyButton);
 	}
 
 	public void loadDataFromDisk() {
@@ -111,6 +115,26 @@ public class WindowMain extends JFrame {
 			File selectedFile = keyFileChooser.getSelectedFile();
 
 			// TODO @viktor: Nakon sto Dragan doda ucitavanje iz .asc fajla, pozovi to
+
+			refreshTables();
+		}
+	}
+	
+	private void exportPrivateKey() {
+		if (tabsPane.getSelectedComponent() != privateKeyRingTab
+				|| privateKeyRingTab.getSelectedKeys().length != 1) {
+			JOptionPane.showMessageDialog(this, "Please select one private key to export", "Cannot export key", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		int selectedPrivateKeyIndex = privateKeyRingTab.getSelectedKeys()[0];
+		Key selectedPrivateKey = privateKeys.elementAt(selectedPrivateKeyIndex);
+		
+		JFileChooser keyFileChooser = new JFileChooser(".");
+		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showSaveDialog(this)) {
+			File selectedFile = keyFileChooser.getSelectedFile();
+
+			// TODO @viktor: Nakon sto Dragan doda exportovanje u .asc fajl, pozovi to
 
 			refreshTables();
 		}
