@@ -15,14 +15,14 @@ public class PrivateKeyRingPanel extends KeyRingPanel {
 	}
 
 	PrivateKeyRingPanel(Vector<Key> keys) {
-		super(keys.stream().map( k -> {
-				return new String[] {
-						k.getTimestampString(),
-						k.getKeyID(),
-						k.getPublicKey(),
-						k.getEncriptedPrivateKey(),
-						k.getEmail()
-						};
-			} ).collect(Collectors.toList()) );
+		super(keys.stream().map(k -> {
+			return new String[] {
+					k.getTimestampString(),
+					k.getKeyID(),
+					k.getPublicKey(),
+					k.getEncriptedPrivateKey(),
+					k.getEmail()
+			};
+		}).collect(Collectors.toList()));
 	}
 }

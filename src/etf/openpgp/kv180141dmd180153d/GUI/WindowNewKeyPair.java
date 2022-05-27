@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -14,12 +15,12 @@ import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.algorithms.IAsymmetricKeyAlgorithm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class WindowNewKeyPair extends JFrame {
+public class WindowNewKeyPair extends JDialog {
 
 	private static final long serialVersionUID = 7954094844062145591L;
 
 	private final static String windowTitle = "Create new key pair";
-	private final static int windowX = 350;
+	private final static int windowX = 400;
 	private final static int windowY = 200;
 
 	private static JTextField keyNameField = new JTextField();
@@ -42,7 +43,8 @@ public class WindowNewKeyPair extends JFrame {
 		throw new NotImplementedException(); // TODO @gavantee
 	}
 
-	public WindowNewKeyPair() {
+	public WindowNewKeyPair(JFrame mainWindow) {
+		super(mainWindow, true);
 		this.setLayout(new GridLayout(6, 2));
 
 		this.add(new JLabel("Key name"));
@@ -67,6 +69,7 @@ public class WindowNewKeyPair extends JFrame {
 		});
 
 		this.setSize(windowX, windowY);
+		this.setResizable(false);
 		this.setTitle(windowTitle);
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);

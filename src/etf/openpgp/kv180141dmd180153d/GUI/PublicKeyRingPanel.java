@@ -13,15 +13,15 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 	protected void setColumnNames() {
 		columnNames = new String[] { "Timestamp", "Key ID", "Public Key", "User ID" };
 	}
-	
+
 	PublicKeyRingPanel(Vector<Key> keys) {
-		super(keys.stream().map( k -> {
+		super(keys.stream().map(k -> {
 			return new String[] {
 					k.getTimestampString(),
 					k.getKeyID(),
 					k.getPublicKey(),
 					k.getEmail()
-					};
-		} ).collect(Collectors.toList()) );
+			};
+		}).collect(Collectors.toList()));
 	}
 }
