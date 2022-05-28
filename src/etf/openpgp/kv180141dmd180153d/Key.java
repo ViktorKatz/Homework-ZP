@@ -17,7 +17,7 @@ public class Key {
 	private String keyName;
 	private String publicKey;
 	private String email;
-	private String encriptedPrivateKey; // samo za private key.
+	private String encryptedPrivateKey; // samo za private key.
 
 	Key(String filepath) { // Import one key from file
 		throw new NotImplementedException(); // TODO @gavantee: treba nam ucitavanje iz fajla, "ako nam neko posalje svoj javni kljuc" uuuuu
@@ -78,7 +78,7 @@ public class Key {
 	}
 
 	public String getEncriptedPrivateKey() {
-		return encriptedPrivateKey;
+		return encryptedPrivateKey;
 	}
 	
 	@Override
@@ -92,7 +92,7 @@ public class Key {
 		this.keyName = keyName;
 		this.publicKey = publicKey;
 		this.email = email;
-		this.encriptedPrivateKey = encriptedPrivateKey;
+		this.encryptedPrivateKey = encriptedPrivateKey;
 	}
 
 	// Samo za moje potrebe testiranja. Posle cu izbrisati kad napravis nacin da se konstruise kljuc.
