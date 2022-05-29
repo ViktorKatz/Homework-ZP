@@ -9,8 +9,12 @@ import etf.openpgp.kv180141dmd180153d.algorithms.RSA;
 import etf.openpgp.kv180141dmd180153d.algorithms.ThreeDESwithEDE;
 
 public final class Constants {
-	public final static Vector<IAsymmetricKeyAlgorithm> supportedAsymetricAlgorithms = new Vector<IAsymmetricKeyAlgorithm>();
-	public final static Vector<ISymmetricKeyAlgorithm> supportedSymetricAlgorithms = new Vector<ISymmetricKeyAlgorithm>();
+	public static final Vector<IAsymmetricKeyAlgorithm> supportedAsymetricAlgorithms = new Vector<IAsymmetricKeyAlgorithm>();
+	public static final Vector<ISymmetricKeyAlgorithm> supportedSymetricAlgorithms = new Vector<ISymmetricKeyAlgorithm>();
+	
+	public static final String privateKeysPersistanceFile = "./privateKeys";
+	public static final String publicKeysPersistanceFile = "./publicKeys";
+	
 	
 	static {
 		supportedAsymetricAlgorithms.add(new RSA(1024));

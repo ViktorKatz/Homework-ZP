@@ -1,5 +1,6 @@
 package etf.openpgp.kv180141dmd180153d;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Vector;
 
@@ -12,7 +13,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * */
 // Mozes razdvojiti ovo na podklase private i public key ako zelis
 
-public class Key {
+public class Key implements Serializable {
+	
+	private static final long serialVersionUID = -7062109191445608706L;
+	
 	private Date timestamp;
 	private String keyName;
 	private String publicKey;

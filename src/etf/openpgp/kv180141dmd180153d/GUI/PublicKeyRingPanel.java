@@ -1,5 +1,6 @@
 package etf.openpgp.kv180141dmd180153d.GUI;
 
+import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -15,13 +16,18 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 	}
 
 	PublicKeyRingPanel(Vector<Key> keys) {
-		super(keys.stream().map(k -> {
+		super(keys);
+	}
+
+	@Override
+	protected List<String[]> getTableDataFromKeyVector(Vector<Key> keys) {
+		return keys.stream().map(k -> {
 			return new String[] {
 					k.getTimestampString(),
 					k.getKeyID(),
 					k.getPublicKey(),
 					k.getEmail()
 			};
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList());
 	}
 }
