@@ -160,7 +160,7 @@ public class WindowMain extends JFrame {
 			File selectedFile = messageFileChooser.getSelectedFile();
 
 			String password = JOptionPane.showInputDialog(this, "Please enter password (or leave empty): ");
-			// TODO @dragan: Imas fajl, imas password, sacuvaj fajl koristeci 
+			// TODO @gavantee: Imas fajl, imas password, sacuvaj fajl koristeci 
 			// JFileChooser decodedMsgFileChooser = new JFileChooser(".");
 			// decodedMsgFileChooser.showSaveDialog(this)
 
@@ -173,8 +173,11 @@ public class WindowMain extends JFrame {
 		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showOpenDialog(this)) {
 			File selectedFile = keyFileChooser.getSelectedFile();
 
-			// TODO @viktor: Nakon sto Dragan doda ucitavanje iz .asc fajla, pozovi to
+			Key keyToImport = Key.getDummytKeyObject(); // TODO @gavantee: Importuj kljuc kako znas i umes
 
+			addKeyFromOutside(keyToImport, false /*isPrivate*/);
+
+			saveDataToDisk();
 			refreshTables();
 		}
 	}
@@ -193,7 +196,7 @@ public class WindowMain extends JFrame {
 		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showSaveDialog(this)) {
 			File selectedFile = keyFileChooser.getSelectedFile();
 
-			// TODO @dragan: Pozovi ovde stagod implementiras
+			// TODO @gavantee: Pozovi ovde stagod implementiras
 
 			refreshTables();
 

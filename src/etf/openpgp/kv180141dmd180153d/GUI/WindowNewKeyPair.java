@@ -43,7 +43,6 @@ public class WindowNewKeyPair extends JDialog {
 	private void saveKey() {		
 		// TODO @gavantee: Imas fieldove, uradi nesto
 		
-		
 		WindowMain mainWindow = (WindowMain) this.getParent();
 		mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), true /*isPrivate*/);
 		mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), false /*isPrivate*/);
