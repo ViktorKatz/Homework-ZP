@@ -12,6 +12,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import etf.openpgp.kv180141dmd180153d.Constants;
+import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.algorithms.IAsymmetricKeyAlgorithm;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -23,10 +24,10 @@ public class WindowNewKeyPair extends JDialog {
 	private final static int windowX = 400;
 	private final static int windowY = 200;
 
-	private static JTextField keyNameField = new JTextField();
-	private static JTextField emailField = new JTextField();
-	private static JComboBox<IAsymmetricKeyAlgorithm> algoritmsBox = new JComboBox<IAsymmetricKeyAlgorithm>(Constants.supportedAsymetricAlgorithms);
-	private static JPasswordField passwordField = new JPasswordField();
+	private static JTextField keyNameField = new JTextField();	// Static to save for next key entry
+	private static JTextField emailField = new JTextField(); 	// Static to save for next key entry
+	private JComboBox<IAsymmetricKeyAlgorithm> algoritmsBox = new JComboBox<IAsymmetricKeyAlgorithm>(Constants.supportedAsymetricAlgorithms);
+	private JPasswordField passwordField = new JPasswordField();
 	private static JButton saveButton = new JButton("Save");
 
 	private boolean isAllInfoCorrectlyEntered() {
@@ -39,8 +40,15 @@ public class WindowNewKeyPair extends JDialog {
 		return true;
 	}
 
-	private void saveKey() {
-		throw new NotImplementedException(); // TODO @gavantee
+	private void saveKey() {		
+		// TODO @gavantee: Imas fieldove, uradi nesto
+		
+		WindowMain mainWindow = (WindowMain) this.getParent();
+		mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), true /*isPrivate*/);
+		mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), false /*isPrivate*/);
+		
+		this.dispose();
+		throw new NotImplementedException(); // TODO @gavantee: delete this when done
 	}
 
 	public WindowNewKeyPair(JFrame mainWindow) {

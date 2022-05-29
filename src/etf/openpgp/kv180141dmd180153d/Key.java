@@ -1,5 +1,6 @@
 package etf.openpgp.kv180141dmd180153d;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Vector;
 
@@ -12,7 +13,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * */
 // Mozes razdvojiti ovo na podklase private i public key ako zelis
 
-public class Key {
+public class Key implements Serializable {
+	
+	private static final long serialVersionUID = -7062109191445608706L;
+	
 	private Date timestamp;
 	private String keyName;
 	private String publicKey;
@@ -20,37 +24,27 @@ public class Key {
 	private String encryptedPrivateKey; // samo za private key.
 
 	Key(String filepath) { // Import one key from file
-		throw new NotImplementedException(); // TODO @gavantee: treba nam ucitavanje iz fajla, "ako nam neko posalje svoj javni kljuc" uuuuu
+		throw new NotImplementedException(); // TODO @gavantee: treba nam ucitavanje iz fajla, "ako nam neko posalje svoj javni kljuc" uuuuu. Promeni parametar na bas fajl, ako zelis.
 	}
 
 	Key(String keyName, String email, String password, IAsymmetricKeyAlgorithm algorithm) {
-		throw new NotImplementedException(); // TODO @gavantee: treba nam generisanje novog kljuca. Ovi parametri su ono sto ti pasiram iz GUI-ja kad neko kreira novi kljuc.
-	}
-
-	public static void saveKeyRingToFile(Vector<Key> keyRing, String filepath) {
-		throw new NotImplementedException(); // TODO @gavantee (edit: @viktor instead):	Svi privatni idu u jedan fajl, svi public u drugi. Ovo cuvamo da ostanu kad se ugasi aplikacija
-		// Napomena: Ne moras ovo da radis. Mogu ja da perzistiram kljuceve pomocu serijalizacije, verovatno je lakse tako.
-	}
-	
-	public static Vector<Key> loadKeyRingFromFile(String filepath) {
-		throw new NotImplementedException(); // TODO @gavantee (edit: @viktor instead):	Svi privatni idu u jedan fajl, svi public u drugi. Ovo cuvamo da ostanu kad se ugasi aplikacija
-		// Napomena: Ne moras ovo da radis. Mogu ja da perzistiram kljuceve pomocu serijalizacije, verovatno je lakse tako.
+		throw new NotImplementedException(); // TODO @gavantee: treba nam generisanje novog kljuca. Promeni parametre slobodno, samo sam pogadjao sta ti moze zatrebati
 	}
 
 	public void exportToFile(String path) {
-		throw new NotImplementedException(); // TODO @gavantee: treba nam i cuvanje u fajl, ako cemo mi nekom da posaljemo svoj javni
+		throw new NotImplementedException(); // TODO @gavantee: treba nam i eksportovanje jednog kljuca u fajl, ako cemo mi nekom da posaljemo svoj javni
 	}
 	
 	public String encryptMessage(String message) {
-		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara 
+		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara, mozda najbolje da prihvatas fajl parametar 
 	}
 	
 	public String decryptMessage(String encryptedMessage) {
-		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara 
+		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara, mozda najbolje da prihvatas fajl parametar
 	}
 	
 	public boolean checkPassword(String password) {
-		return password.equals("123"); // TODO @gavantee
+		return password.equals("123"); // TODO @gavantee check password
 	}
 
 	public Date getTimestamp() {

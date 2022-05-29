@@ -84,7 +84,7 @@ public class WindowEncryptMessage extends JDialog {
 			
 			JFileChooser outputFileChooser = new JFileChooser(".");
 			if (JFileChooser.APPROVE_OPTION == outputFileChooser.showSaveDialog(this)) {
-				throw new NotImplementedException(); // TODO @viktor: Kad Dragan sifruje poruku, sacuvaj fajl
+				throw new NotImplementedException(); // TODO @gavantee: Enkriptovanu poruku sacuvaj u fajl
 			}
 		});
 

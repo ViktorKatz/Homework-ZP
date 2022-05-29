@@ -22,26 +22,34 @@ public abstract class KeyRingPanel extends JPanel {
 
 	protected abstract void setColumnNames();
 
-	KeyRingPanel(List<String[]> keysData) {
+	protected abstract List<String[]> getTableDataFromKeyVector(Vector<Key> keys);
+
+	KeyRingPanel(Vector<Key> keys) {
 		setColumnNames();
+
+		table = new JTable();
+		setNewData(keys);
+
+		scrollPane = new JScrollPane(table);
+		scrollPane.setSize(780, 600);
+
 		this.setLayout(null);
+		this.add(scrollPane);
+	}
+
+	public void setNewData(Vector<Key> keys) {
+		List<String[]> keysData = getTableDataFromKeyVector(keys);
 
 		String[][] tableData = keysData.toArray(new String[0][]);
-		table = new JTable();
 		table.setModel(new DefaultTableModel(tableData, columnNames) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
 		});
-
-		scrollPane = new JScrollPane(table);
-		scrollPane.setSize(780, 600);
-
-		this.add(scrollPane);
 	}
 
-	public void refreshData() {
+	public void refreshTable() {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.fireTableDataChanged();
 	}
