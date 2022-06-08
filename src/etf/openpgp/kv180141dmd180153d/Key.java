@@ -74,7 +74,7 @@ public class Key implements Serializable {
 	        PGPSignatureSubpacketGenerator encryptSubGen = new PGPSignatureSubpacketGenerator();
 	        encryptSubGen.setKeyFlags(false, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
 	        
-	        PBESecretKeyEncryptor encryptor = (new BcPBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256)).build(password.toCharArray());
+	        PBESecretKeyEncryptor encryptor = (new BcPBESecretKeyEncryptorBuilder(PGPEncryptedData.CAST5)).build(password.toCharArray());
 	        PGPKeyRingGenerator keyRingGen = new PGPKeyRingGenerator(
 	                PGPPublicKey.RSA_SIGN,
 	                signKeyPair,
@@ -85,8 +85,8 @@ public class Key implements Serializable {
 	                new BcPGPContentSignerBuilder(PGPPublicKey.RSA_SIGN, HashAlgorithmTags.SHA256),
 	                encryptor
 	        );
-	        keyRingGen.addSubKey(encyptKeyPair, encryptSubGen.generate(), null);
 	        
+	        keyRingGen.addSubKey(encyptKeyPair, encryptSubGen.generate(), null);
 	        PGPPublicKeyRing pubKeyRing = keyRingGen.generatePublicKeyRing();
 	        PGPSecretKeyRing privKeyRing = keyRingGen.generateSecretKeyRing();
 	        

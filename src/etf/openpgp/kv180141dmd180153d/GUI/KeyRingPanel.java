@@ -52,8 +52,13 @@ public abstract class KeyRingPanel extends JPanel {
 		model.fireTableDataChanged();
 	}
 
-	public int[] getSelectedKeys() {
-		return table.getSelectedRows();
+	public long[] getSelectedKeys() {
+		int[] rows = table.getSelectedRows();
+		long[] ids = new long[rows.length];
+		for (int i = 0; i < ids.length; ++i) {
+			ids[i] = Long.parseUnsignedLong((String) table.getValueAt(rows[i], 1), 16);
+		}
+		return ids;
 	}
 	
     public static String toHex(byte[] bytes)

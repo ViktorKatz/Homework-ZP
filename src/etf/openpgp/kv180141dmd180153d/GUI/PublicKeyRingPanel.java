@@ -35,10 +35,10 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 		PGPPublicKeyRingCollection myPubRings = RingCollections.getMyPubRings();
 		PGPPublicKeyRingCollection pubRings = RingCollections.getPubRings();
 		PGPPublicKeyRing ring = null;
-		boolean paired = true;
+		boolean paired = false;
 		List<String[]> res = new ArrayList<String[]>();
 		Iterator<PGPPublicKeyRing> iter = myPubRings.getKeyRings();
-		if (iter.hasNext())
+		if (paired && iter.hasNext())
 			ring = iter.next();
 		else {
 			iter = pubRings.getKeyRings();
@@ -53,7 +53,7 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 			String ts = key.getCreationTime().toString();
 			String pk = toHex(key.getFingerprint());
 			
-			res.add(new String[]{ts, keyId, pk, email});
+			res.add(new String[]{ ts, keyId, pk, email });
 			if (iter.hasNext())
 				ring = iter.next();
 			else if (paired) {
