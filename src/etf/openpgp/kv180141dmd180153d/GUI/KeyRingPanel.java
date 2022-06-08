@@ -14,21 +14,19 @@ public abstract class KeyRingPanel extends JPanel {
 
 	private static final long serialVersionUID = -5802339836769941121L;
 
-	protected static String[] columnNames;
+	protected String[] columnNames;
 
 	protected JScrollPane scrollPane;
 	protected JTable table;
-	protected Vector<Key> keys;
 
 	protected abstract void setColumnNames();
+	protected abstract List<String[]> getTableDataFromRingCollection();
 
-	protected abstract List<String[]> getTableDataFromKeyVector(Vector<Key> keys);
-
-	KeyRingPanel(Vector<Key> keys) {
+	KeyRingPanel() {
 		setColumnNames();
 
 		table = new JTable();
-		setNewData(keys);
+		refreshData();
 
 		scrollPane = new JScrollPane(table);
 		scrollPane.setSize(780, 600);
@@ -37,9 +35,8 @@ public abstract class KeyRingPanel extends JPanel {
 		this.add(scrollPane);
 	}
 
-	public void setNewData(Vector<Key> keys) {
-		List<String[]> keysData = getTableDataFromKeyVector(keys);
-
+	public void refreshData() {
+		List<String[]> keysData = getTableDataFromRingCollection();
 		String[][] tableData = keysData.toArray(new String[0][]);
 		table.setModel(new DefaultTableModel(tableData, columnNames) {
 			@Override
@@ -50,11 +47,34 @@ public abstract class KeyRingPanel extends JPanel {
 	}
 
 	public void refreshTable() {
+		refreshData();
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.fireTableDataChanged();
 	}
 
-	public int[] getSelectedKeys() {
-		return table.getSelectedRows();
+	public long[] getSelectedKeys() {
+		int[] rows = table.getSelectedRows();
+		long[] ids = new long[rows.length];
+		for (int i = 0; i < ids.length; ++i) {
+			ids[i] = Long.parseUnsignedLong((String) table.getValueAt(rows[i], 1), 16);
+		}
+		return ids;
 	}
+	
+    public static String toHex(byte[] bytes)
+    {
+        StringBuilder result = new StringBuilder();
+  
+        for (byte i : bytes) {
+            int decimal = (int)i & 0XFF;
+            String hex = Integer.toHexString(decimal);
+  
+            if (hex.length() % 2 == 1) {
+                hex = "0" + hex;
+            }
+  
+            result.append(hex);
+        }
+        return result.toString();
+    }
 }

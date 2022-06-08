@@ -39,27 +39,15 @@ import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.oer.its.ieee1609dot2.basetypes.SymmAlgorithm;
 
-/*
- * OK, ovo je nesto sa cime bi bilo kul da radis, posto stavljam to kao klasu koju ce moje metode da primaju
- * Izmenjaj tipove, dodaj metode, stagod. Posle cu ja getere za ispis na GUIju dodati ako mi nesto zafali.
- * */
-// Mozes razdvojiti ovo na podklase private i public key ako zelis
-
 public class Key implements Serializable {
 	
 	private static final long serialVersionUID = -7062109191445608706L;
-	
-	private Date timestamp;
-	private String keyName;
-	private String publicKey;
-	private String email;
-	private String encryptedPrivateKey; // samo za private key.
 
 	Key(String filepath) { // Import one key from file
 		throw new NotImplementedException(); // TODO @gavantee: treba nam ucitavanje iz fajla, "ako nam neko posalje svoj javni kljuc" uuuuu. Promeni parametar na bas fajl, ako zelis.
 	}
 
-	Key(String keyName, String email, String password, IAsymmetricKeyAlgorithm algorithm) {
+	public static void newKey(String email, String password, IAsymmetricKeyAlgorithm algorithm) {
 		int keySize = algorithm.getKeySize();
 		RSAKeyPairGenerator keyPairGen = new RSAKeyPairGenerator();
 		keyPairGen.init(new RSAKeyGenerationParameters(BigInteger.valueOf(0x10001), new SecureRandom(), keySize, 12));
@@ -69,21 +57,23 @@ public class Key implements Serializable {
 	        PGPSignatureSubpacketGenerator signSubGen = new PGPSignatureSubpacketGenerator();
 	        signSubGen.setKeyFlags(false, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER);
 	        signSubGen.setPreferredSymmetricAlgorithms(false, new int[] {
-	        		SymmetricKeyAlgorithmTags.AES_256,
-	        		SymmetricKeyAlgorithmTags.AES_192,
-	        		SymmetricKeyAlgorithmTags.AES_128, });
+	        	SymmetricKeyAlgorithmTags.AES_256,
+	        	SymmetricKeyAlgorithmTags.AES_192,
+	        	SymmetricKeyAlgorithmTags.AES_128
+	        });
 	        signSubGen.setPreferredHashAlgorithms(false, new int[] {
-	        		HashAlgorithmTags.SHA256,
-	                HashAlgorithmTags.SHA1,
-	                HashAlgorithmTags.SHA384,
-	                HashAlgorithmTags.SHA512,
-	                HashAlgorithmTags.SHA224, });
-	        signSubGen.setPreferredCompressionAlgorithms(false, new int[] { CompressionAlgorithmTags.ZIP });
-	        
+	        	HashAlgorithmTags.SHA256,
+	            HashAlgorithmTags.SHA1,
+	            HashAlgorithmTags.SHA384,
+	            HashAlgorithmTags.SHA512,
+	            HashAlgorithmTags.SHA224,
+	        });
+	        signSubGen.setPreferredCompressionAlgorithms(false, new int[] {
+	        	CompressionAlgorithmTags.ZIP
+	        });
 	        PGPSignatureSubpacketGenerator encryptSubGen = new PGPSignatureSubpacketGenerator();
 	        encryptSubGen.setKeyFlags(false, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
 	        
-	        PGPDigestCalculator sha = new BcPGPDigestCalculatorProvider().get(HashAlgorithmTags.SHA1);
 	        PBESecretKeyEncryptor encryptor = (new BcPBESecretKeyEncryptorBuilder(PGPEncryptedData.CAST5)).build(password.toCharArray());
 	        PGPKeyRingGenerator keyRingGen = new PGPKeyRingGenerator(
 	                PGPPublicKey.RSA_SIGN,
@@ -95,8 +85,8 @@ public class Key implements Serializable {
 	                new BcPGPContentSignerBuilder(PGPPublicKey.RSA_SIGN, HashAlgorithmTags.SHA256),
 	                encryptor
 	        );
-	        keyRingGen.addSubKey(encyptKeyPair, encryptSubGen.generate(), null);
 	        
+	        keyRingGen.addSubKey(encyptKeyPair, encryptSubGen.generate(), null);
 	        PGPPublicKeyRing pubKeyRing = keyRingGen.generatePublicKeyRing();
 	        PGPSecretKeyRing privKeyRing = keyRingGen.generateSecretKeyRing();
 	        
@@ -123,57 +113,5 @@ public class Key implements Serializable {
 	
 	public boolean checkPassword(String password) {
 		return password.equals("123"); // TODO @gavantee check password
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public String getTimestampString() {
-		return timestamp.toString();
-	}
-
-	public String getKeyName() {
-		return keyName;
-	}
-
-	public String getKeyID() {
-		return "TODO"; // TODO @gavantee: prvih par slova public keya, idk, videces
-	}
-
-	public String getPublicKey() {
-		return publicKey;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getEncriptedPrivateKey() {
-		return encryptedPrivateKey;
-	}
-	
-	@Override
-	public String toString() {
-		return keyName + " (" + email + ")";
-	}
-
-	// Samo za moje potrebe testiranja. Posle cu izbrisati kad napravis nacin da se konstruise kljuc.
-	private Key(Date timestamp, String keyName, String publicKey, String email, String encriptedPrivateKey) {
-		this.timestamp = timestamp;
-		this.keyName = keyName;
-		this.publicKey = publicKey;
-		this.email = email;
-		this.encryptedPrivateKey = encriptedPrivateKey;
-	}
-
-	// Samo za moje potrebe testiranja. Posle cu izbrisati kad napravis nacin da se konstruise kljuc.
-	public static Key getDummytKeyObject() {
-		return new Key(
-				new Date(System.currentTimeMillis()),
-				"Ime test kljuca",
-				"13uirh239rh3298rh3298rh3wfw23f4j46j64h56h56h4g24g355h23g42",
-				"testmail@test.test",
-				"094jg3490gk390gk3409gk3490gk32fwf23f24f34f3g35g35gh46h57je");
 	}
 }

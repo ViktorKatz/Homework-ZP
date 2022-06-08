@@ -35,9 +35,6 @@ public class WindowMain extends JFrame {
 	private final static int windowY = 800;
 	private final static int horizontalBreak = 600;
 
-	private Vector<Key> privateKeys = new Vector<Key>();
-	private Vector<Key> publicKeys = new Vector<Key>();
-
 	private JTabbedPane tabsPane = new JTabbedPane();
 	private PrivateKeyRingPanel privateKeyRingTab; // Init after loading data from disk
 	private PublicKeyRingPanel publicKeyRingTab; // Init after loading data from disk
@@ -47,8 +44,8 @@ public class WindowMain extends JFrame {
 		tabsPane.setBounds(0, 0, windowX, horizontalBreak);
 
 		loadDataFromDisk();
-		privateKeyRingTab = new PrivateKeyRingPanel(privateKeys);
-		publicKeyRingTab = new PublicKeyRingPanel(publicKeys);
+		privateKeyRingTab = new PrivateKeyRingPanel();
+		publicKeyRingTab = new PublicKeyRingPanel();
 		tabsPane.add("Private Key Ring", privateKeyRingTab);
 		tabsPane.add("Public Key Ring", publicKeyRingTab);
 
@@ -70,12 +67,14 @@ public class WindowMain extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		
-		RingCollections.init();
 	}
 
 	private void addButtons() {
 		JButton newKeyPairButton = new JButton("Create new key pair");
-		newKeyPairButton.addActionListener(e -> new WindowNewKeyPair(this));
+		newKeyPairButton.addActionListener(e -> {
+			new WindowNewKeyPair(this);
+			refreshTables();
+		});
 		buttonPanel.add(newKeyPairButton);
 		buttonPanel.setBounds(0, horizontalBreak, windowX, windowY - horizontalBreak);
 
@@ -84,75 +83,61 @@ public class WindowMain extends JFrame {
 		buttonPanel.add(deleteSelectedKeysButton);
 
 		JButton sendMessageButton = new JButton("Send message");
-		sendMessageButton.addActionListener(e -> new WindowEncryptMessage(this, publicKeys, privateKeys));
+		sendMessageButton.addActionListener(e -> new WindowEncryptMessage(this, null, null));
 		buttonPanel.add(sendMessageButton);
 
 		JButton receiveMessageButton = new JButton("Receive message");
 		receiveMessageButton.addActionListener(e -> receiveMessage());
 		buttonPanel.add(receiveMessageButton);
 
-		JButton importKeyButton = new JButton("Import foreign private key");
-		importKeyButton.addActionListener(e -> importPublicKey());
+		JButton importKeyButton = new JButton("Import key");
+		importKeyButton.addActionListener(e -> importKey());
 		buttonPanel.add(importKeyButton);
 
-		JButton exportKeyButton = new JButton("Export public key from private key");
-		exportKeyButton.addActionListener(e -> exportPrivateKey());
+		JButton exportKeyButton = new JButton("Export key");
+		exportKeyButton.addActionListener(e -> exportKey());
 		buttonPanel.add(exportKeyButton);
-	}
-	
-	public void addKeyFromOutside(Key key, boolean isPrivate) { // Used when other windows add keys (new key creation, import etc.)
-		Vector<Key> targetKeySet = isPrivate? privateKeys : publicKeys;
-		targetKeySet.add(key);
 		
-		saveDataToDisk();
-		refreshTables();
+		JButton exportKeyButton2 = new JButton("Export public from private key");
+		exportKeyButton2.addActionListener(e -> exportPublicKey());
+		buttonPanel.add(exportKeyButton2);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void loadDataFromDisk() {
-		try (ObjectInputStream privateKeysInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(Constants.privateKeysPersistanceFile)));
-				ObjectInputStream publicKeysInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(Constants.publicKeysPersistanceFile)))) {
-
-			privateKeys = (Vector<Key>) privateKeysInputStream.readObject();
-			publicKeys = (Vector<Key>) publicKeysInputStream.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		RingCollections.init();
 	}
 
 	public void saveDataToDisk() {
-		try (ObjectOutputStream privateKeysOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(Constants.privateKeysPersistanceFile)));
-				ObjectOutputStream publicKeysOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(Constants.publicKeysPersistanceFile)));) {
+        try {
+            BufferedOutputStream priv = new BufferedOutputStream(new FileOutputStream("myKeys"));
+			RingCollections.getPrivRings().encode(priv);
+	        priv.close();
 
-			privateKeysOutputStream.writeObject(privateKeys);
-			publicKeysOutputStream.writeObject(publicKeys);
+	        BufferedOutputStream myPub = new BufferedOutputStream(new FileOutputStream("myKeys.pub"));
+	        RingCollections.getMyPubRings().encode(myPub);
+	        myPub.close();
+	        
+	        BufferedOutputStream pub = new BufferedOutputStream(new FileOutputStream("publicKeys.pub"));
+	        RingCollections.getPubRings().encode(pub);
+	        pub.close();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void refreshTables() {
-		privateKeyRingTab.setNewData(privateKeys);
-		publicKeyRingTab.setNewData(publicKeys);
-
 		privateKeyRingTab.refreshTable();
 		publicKeyRingTab.refreshTable();
 	}
 
 	private void deleteSelectedKeys() {
 		KeyRingPanel selectedTab = (KeyRingPanel) tabsPane.getSelectedComponent();
-		int[] selectedKeys = selectedTab.getSelectedKeys();
+		long[] ids = selectedTab.getSelectedKeys();
 
-		Vector<Key> keySetForRemoval = selectedTab == privateKeyRingTab ? privateKeys : publicKeys;
-
-		int alreadyRemoved = 0;
-		for (int sk : selectedKeys) {
-			int removal_index = sk - alreadyRemoved; // Shiftuju se, pa moram ovu primitivu da radim. Vektorima stvarno treba removeIndexes(int[]) metoda...
-			keySetForRemoval.remove(removal_index);
-			
-			alreadyRemoved++;
-		}
-
+		RingCollections.remove(ids, selectedTab == privateKeyRingTab);
+		
 		saveDataToDisk(); // Flush data
 		refreshTables();
 	}
@@ -171,39 +156,62 @@ public class WindowMain extends JFrame {
 		}
 	}
 
-	private void importPublicKey() {
+	private void importKey() {
 		JFileChooser keyFileChooser = new JFileChooser(".");
 		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showOpenDialog(this)) {
 			File selectedFile = keyFileChooser.getSelectedFile();
-
-			Key keyToImport = Key.getDummytKeyObject(); // TODO @gavantee: Importuj kljuc kako znas i umes
-
-			addKeyFromOutside(keyToImport, false /*isPrivate*/);
-
+			boolean res = true;
+			if (tabsPane.getSelectedComponent() == privateKeyRingTab)
+				res = RingCollections.importPriv(selectedFile);
+			else res = RingCollections.importPub(selectedFile);
+			if (!res) {
+				JOptionPane.showMessageDialog(this, "An error occured", "Cannot import key", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			saveDataToDisk();
 			refreshTables();
 		}
 	}
 
-	private void exportPrivateKey() {
+	private void exportKey() {
+		boolean priv = tabsPane.getSelectedComponent() == privateKeyRingTab;
+		
+		if (priv) {
+			if (privateKeyRingTab.getSelectedKeys().length != 1) {
+				JOptionPane.showMessageDialog(this, "Please select one key", "Cannot export key", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			long id = privateKeyRingTab.getSelectedKeys()[0];
+			JFileChooser keyFileChooser = new JFileChooser(".");
+			if (JFileChooser.APPROVE_OPTION == keyFileChooser.showSaveDialog(this)) {
+				File selectedFile = keyFileChooser.getSelectedFile();
+
+				RingCollections.exportPriv(id, selectedFile);
+
+				refreshTables();
+			}
+		}
+
+
+	}
+	
+	private void exportPublicKey() {
+		System.out.println("export myPub");
 		if (tabsPane.getSelectedComponent() != privateKeyRingTab
 				|| privateKeyRingTab.getSelectedKeys().length != 1) {
-			JOptionPane.showMessageDialog(this, "Please select one private key to export", "Cannot export key", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Please select one private key", "Cannot export key", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		int selectedPrivateKeyIndex = privateKeyRingTab.getSelectedKeys()[0];
-		Key selectedPrivateKey = privateKeys.elementAt(selectedPrivateKeyIndex);
+		long selectedPrivateKey = privateKeyRingTab.getSelectedKeys()[0];
 
 		JFileChooser keyFileChooser = new JFileChooser(".");
 		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showSaveDialog(this)) {
 			File selectedFile = keyFileChooser.getSelectedFile();
 
-			// TODO @gavantee: Pozovi ovde stagod implementiras
+			RingCollections.exportPubFromPriv(selectedPrivateKey, selectedFile);
 
 			refreshTables();
-
-			throw new NotImplementedException();
 		}
 	}
 
