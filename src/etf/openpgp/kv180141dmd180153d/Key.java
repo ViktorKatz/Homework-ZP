@@ -39,12 +39,6 @@ import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.oer.its.ieee1609dot2.basetypes.SymmAlgorithm;
 
-/*
- * OK, ovo je nesto sa cime bi bilo kul da radis, posto stavljam to kao klasu koju ce moje metode da primaju
- * Izmenjaj tipove, dodaj metode, stagod. Posle cu ja getere za ispis na GUIju dodati ako mi nesto zafali.
- * */
-// Mozes razdvojiti ovo na podklase private i public key ako zelis
-
 public class Key implements Serializable {
 	
 	private static final long serialVersionUID = -7062109191445608706L;
@@ -59,7 +53,7 @@ public class Key implements Serializable {
 		throw new NotImplementedException(); // TODO @gavantee: treba nam ucitavanje iz fajla, "ako nam neko posalje svoj javni kljuc" uuuuu. Promeni parametar na bas fajl, ako zelis.
 	}
 
-	Key(String keyName, String email, String password, IAsymmetricKeyAlgorithm algorithm) {
+	public Key(String keyName, String email, String password, IAsymmetricKeyAlgorithm algorithm) {
 		int keySize = algorithm.getKeySize();
 		RSAKeyPairGenerator keyPairGen = new RSAKeyPairGenerator();
 		keyPairGen.init(new RSAKeyGenerationParameters(BigInteger.valueOf(0x10001), new SecureRandom(), keySize, 12));
@@ -83,8 +77,7 @@ public class Key implements Serializable {
 	        PGPSignatureSubpacketGenerator encryptSubGen = new PGPSignatureSubpacketGenerator();
 	        encryptSubGen.setKeyFlags(false, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
 	        
-	        PGPDigestCalculator sha = new BcPGPDigestCalculatorProvider().get(HashAlgorithmTags.SHA1);
-	        PBESecretKeyEncryptor encryptor = (new BcPBESecretKeyEncryptorBuilder(PGPEncryptedData.CAST5)).build(password.toCharArray());
+	        PBESecretKeyEncryptor encryptor = (new BcPBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256)).build(password.toCharArray());
 	        PGPKeyRingGenerator keyRingGen = new PGPKeyRingGenerator(
 	                PGPPublicKey.RSA_SIGN,
 	                signKeyPair,
@@ -101,6 +94,7 @@ public class Key implements Serializable {
 	        PGPSecretKeyRing privKeyRing = keyRingGen.generateSecretKeyRing();
 	        
 	        RingCollections.addPrivKey(privKeyRing, pubKeyRing);
+	        System.out.println("RSA GEN");
 	        
 		} catch (PGPException e) {
 			// TODO Auto-generated catch block

@@ -23,12 +23,13 @@ public abstract class KeyRingPanel extends JPanel {
 	protected abstract void setColumnNames();
 
 	protected abstract List<String[]> getTableDataFromKeyVector(Vector<Key> keys);
+	protected abstract List<String[]> getTableDataFromRingCollection();
 
 	KeyRingPanel(Vector<Key> keys) {
 		setColumnNames();
 
 		table = new JTable();
-		setNewData(keys);
+		refreshData();
 
 		scrollPane = new JScrollPane(table);
 		scrollPane.setSize(780, 600);
@@ -37,9 +38,8 @@ public abstract class KeyRingPanel extends JPanel {
 		this.add(scrollPane);
 	}
 
-	public void setNewData(Vector<Key> keys) {
-		List<String[]> keysData = getTableDataFromKeyVector(keys);
-
+	public void refreshData() {
+		List<String[]> keysData = getTableDataFromRingCollection();
 		String[][] tableData = keysData.toArray(new String[0][]);
 		table.setModel(new DefaultTableModel(tableData, columnNames) {
 			@Override
@@ -50,6 +50,7 @@ public abstract class KeyRingPanel extends JPanel {
 	}
 
 	public void refreshTable() {
+		refreshData();
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.fireTableDataChanged();
 	}

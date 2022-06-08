@@ -1,10 +1,19 @@
 package etf.openpgp.kv180141dmd180153d.GUI;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKey;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
+
 import etf.openpgp.kv180141dmd180153d.Key;
+import etf.openpgp.kv180141dmd180153d.RingCollections;
 
 public class PrivateKeyRingPanel extends KeyRingPanel {
 
@@ -30,5 +39,23 @@ public class PrivateKeyRingPanel extends KeyRingPanel {
 					k.getEmail()
 			};
 		}).collect(Collectors.toList());
+	}
+	
+	public List<String[]> getTableDataFromRingCollection() {
+		PGPSecretKeyRingCollection privRings = RingCollections.getPrivRings();
+		PGPSecretKeyRing ring;
+		List<String[]> res = new ArrayList<String[]>();
+		Iterator<PGPSecretKeyRing> iter = privRings.getKeyRings();
+		while (iter.hasNext()) {
+			ring = iter.next();
+			PGPSecretKey key = ring.getSecretKey();
+			String keyId = Long.toString(key.getKeyID());
+			String email = key.getUserIDs().next();
+			System.out.println("email: " + email);
+			String ts = Long.toString(key.getPublicKey().getValidSeconds());
+			
+			res.add(new String[]{ts, keyId, email, email, email});
+		}
+		return res;
 	}
 }

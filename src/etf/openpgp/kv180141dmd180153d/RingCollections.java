@@ -1,6 +1,7 @@
 package etf.openpgp.kv180141dmd180153d;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
@@ -15,9 +16,9 @@ public class RingCollections {
 	
 	public static void init() {
 		try {
-			pubRings = new PGPPublicKeyRingCollection(null);
-			privRings = new PGPSecretKeyRingCollection(null);
-			myPubRings = new PGPPublicKeyRingCollection(null);
+			pubRings = new PGPPublicKeyRingCollection(new ArrayList<PGPPublicKeyRing>());
+			privRings = new PGPSecretKeyRingCollection(new ArrayList<PGPSecretKeyRing>());
+			myPubRings = new PGPPublicKeyRingCollection(new ArrayList<PGPPublicKeyRing>());
 			
 		} catch (IOException | PGPException e) {
 			// TODO Auto-generated catch block
@@ -26,11 +27,24 @@ public class RingCollections {
 	}
 	
 	public static void addPubKey(PGPPublicKeyRing pubRing) {
-		PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
+		pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
 	}
 	
 	public static void addPrivKey(PGPSecretKeyRing privRing, PGPPublicKeyRing pubRing) {
-		PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
-		PGPPublicKeyRingCollection.addPublicKeyRing(myPubRings, pubRing);
+		privRings = PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
+		myPubRings = PGPPublicKeyRingCollection.addPublicKeyRing(myPubRings, pubRing);
+	}
+	
+	
+	public static PGPSecretKeyRingCollection getPrivRings() {
+		return privRings;
+	}
+	
+	public static PGPPublicKeyRingCollection getPubRings() {
+		return pubRings;
+	}
+	
+	public static PGPPublicKeyRingCollection getMyPubRings() {
+		return myPubRings;
 	}
 }

@@ -28,7 +28,7 @@ public class WindowNewKeyPair extends JDialog {
 	private static JTextField emailField = new JTextField(); 	// Static to save for next key entry
 	private JComboBox<IAsymmetricKeyAlgorithm> algoritmsBox = new JComboBox<IAsymmetricKeyAlgorithm>(Constants.supportedAsymetricAlgorithms);
 	private JPasswordField passwordField = new JPasswordField();
-	private static JButton saveButton = new JButton("Save");
+	private JButton saveButton = new JButton("Save");
 
 	private boolean isAllInfoCorrectlyEntered() {
 		if (keyNameField.getText().isEmpty())
@@ -44,11 +44,15 @@ public class WindowNewKeyPair extends JDialog {
 		// TODO @gavantee: Imas fieldove, uradi nesto
 		
 		WindowMain mainWindow = (WindowMain) this.getParent();
-		mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), true /*isPrivate*/);
-		mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), false /*isPrivate*/);
+		//mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), true /*isPrivate*/);
+		//mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), false /*isPrivate*/);
+		Key key = new Key(keyNameField.getText(),
+				emailField.getText(),
+				String.valueOf(passwordField.getPassword()),
+				(IAsymmetricKeyAlgorithm) algoritmsBox.getSelectedItem());
 		
 		this.dispose();
-		throw new NotImplementedException(); // TODO @gavantee: delete this when done
+		// throw new NotImplementedException(); // TODO @gavantee: delete this when done
 	}
 
 	public WindowNewKeyPair(JFrame mainWindow) {

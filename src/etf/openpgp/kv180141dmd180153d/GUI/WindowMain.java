@@ -70,12 +70,14 @@ public class WindowMain extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		
-		RingCollections.init();
 	}
 
 	private void addButtons() {
 		JButton newKeyPairButton = new JButton("Create new key pair");
-		newKeyPairButton.addActionListener(e -> new WindowNewKeyPair(this));
+		newKeyPairButton.addActionListener(e -> {
+			new WindowNewKeyPair(this);
+			refreshTables();
+		});
 		buttonPanel.add(newKeyPairButton);
 		buttonPanel.setBounds(0, horizontalBreak, windowX, windowY - horizontalBreak);
 
@@ -132,9 +134,6 @@ public class WindowMain extends JFrame {
 	}
 
 	public void refreshTables() {
-		privateKeyRingTab.setNewData(privateKeys);
-		publicKeyRingTab.setNewData(publicKeys);
-
 		privateKeyRingTab.refreshTable();
 		publicKeyRingTab.refreshTable();
 	}
@@ -208,6 +207,7 @@ public class WindowMain extends JFrame {
 	}
 
 	public static void main(String[] args) {
+		RingCollections.init();
 		getInstance();
 	}
 
