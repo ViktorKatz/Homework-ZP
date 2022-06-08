@@ -160,12 +160,16 @@ public class WindowMain extends JFrame {
 		JFileChooser keyFileChooser = new JFileChooser(".");
 		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showOpenDialog(this)) {
 			File selectedFile = keyFileChooser.getSelectedFile();
-
-			// TODO @gavantee: Importuj kljuc kako znas i umes
-
+			boolean res = true;
+			if (tabsPane.getSelectedComponent() == privateKeyRingTab)
+				res = RingCollections.importPriv(selectedFile);
+			else res = RingCollections.importPub(selectedFile);
+			if (!res) {
+				JOptionPane.showMessageDialog(this, "An error occured", "Cannot import key", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			saveDataToDisk();
 			refreshTables();
-			throw new NotImplementedException();
 		}
 	}
 

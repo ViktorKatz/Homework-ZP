@@ -70,7 +70,7 @@ public class RingCollections {
 			for (long id : ids) {
 				try {
 					privRings = PGPSecretKeyRingCollection.removeSecretKeyRing(privRings, privRings.getSecretKeyRing(id));
-					myPubRings = PGPPublicKeyRingCollection.removePublicKeyRing(myPubRings, myPubRings.getPublicKeyRing(id));
+					//myPubRings = PGPPublicKeyRingCollection.removePublicKeyRing(myPubRings, myPubRings.getPublicKeyRing(id));
 				} catch (PGPException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -120,9 +120,34 @@ public class RingCollections {
         }
 	}
 	
-	public static void importPub(File file) {
+	public static boolean importPub(File file) {
+		PGPPublicKeyRing pubRing;
+		try {
+			pubRing = new PGPPublicKeyRing(
+				PGPUtil.getDecoderStream(new FileInputStream(file)),
+				new BcKeyFingerprintCalculator());
+			pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
-	public static void importPriv(File file) {
+	public static boolean importPriv(File file) {
+		PGPSecretKeyRing privRing;
+		try {
+			privRing = new PGPSecretKeyRing(
+				PGPUtil.getDecoderStream(new FileInputStream(file)),
+				new BcKeyFingerprintCalculator());
+			privRings = PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
+		} catch (IOException | PGPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }
