@@ -1,5 +1,6 @@
 package etf.openpgp.kv180141dmd180153d.GUI;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,20 +27,8 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 		columnNames = new String[] { "Timestamp", "Key ID", "Public Key", "User ID" };
 	}
 
-	PublicKeyRingPanel(Vector<Key> keys) {
-		super(keys);
-	}
-
-	@Override
-	protected List<String[]> getTableDataFromKeyVector(Vector<Key> keys) {
-		return keys.stream().map(k -> {
-			return new String[] {
-					k.getTimestampString(),
-					k.getKeyID(),
-					k.getPublicKey(),
-					k.getEmail()
-			};
-		}).collect(Collectors.toList());
+	PublicKeyRingPanel() {
+		super();
 	}
 	
 	public List<String[]> getTableDataFromRingCollection() {
@@ -59,11 +48,12 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 		}
 		while (ring != null) {
 			PGPPublicKey key = ring.getPublicKey();
-			String keyId = Long.toString(key.getKeyID());
+			String keyId = Long.toHexString(key.getKeyID());
 			String email = key.getUserIDs().next();
-			String ts = Long.toString(key.getValidSeconds());
+			String ts = key.getCreationTime().toString();
+			String pk = toHex(key.getFingerprint());
 			
-			res.add(new String[]{ts, keyId, "", email});
+			res.add(new String[]{ts, keyId, pk, email});
 			if (iter.hasNext())
 				ring = iter.next();
 			else if (paired) {

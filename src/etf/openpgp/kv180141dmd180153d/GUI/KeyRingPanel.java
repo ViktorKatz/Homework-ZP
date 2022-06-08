@@ -18,14 +18,11 @@ public abstract class KeyRingPanel extends JPanel {
 
 	protected JScrollPane scrollPane;
 	protected JTable table;
-	protected Vector<Key> keys;
 
 	protected abstract void setColumnNames();
-
-	protected abstract List<String[]> getTableDataFromKeyVector(Vector<Key> keys);
 	protected abstract List<String[]> getTableDataFromRingCollection();
 
-	KeyRingPanel(Vector<Key> keys) {
+	KeyRingPanel() {
 		setColumnNames();
 
 		table = new JTable();
@@ -58,4 +55,21 @@ public abstract class KeyRingPanel extends JPanel {
 	public int[] getSelectedKeys() {
 		return table.getSelectedRows();
 	}
+	
+    public static String toHex(byte[] bytes)
+    {
+        StringBuilder result = new StringBuilder();
+  
+        for (byte i : bytes) {
+            int decimal = (int)i & 0XFF;
+            String hex = Integer.toHexString(decimal);
+  
+            if (hex.length() % 2 == 1) {
+                hex = "0" + hex;
+            }
+  
+            result.append(hex);
+        }
+        return result.toString();
+    }
 }

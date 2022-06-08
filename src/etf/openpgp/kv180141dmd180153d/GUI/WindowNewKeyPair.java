@@ -24,15 +24,12 @@ public class WindowNewKeyPair extends JDialog {
 	private final static int windowX = 400;
 	private final static int windowY = 200;
 
-	private static JTextField keyNameField = new JTextField();	// Static to save for next key entry
 	private static JTextField emailField = new JTextField(); 	// Static to save for next key entry
 	private JComboBox<IAsymmetricKeyAlgorithm> algoritmsBox = new JComboBox<IAsymmetricKeyAlgorithm>(Constants.supportedAsymetricAlgorithms);
 	private JPasswordField passwordField = new JPasswordField();
 	private JButton saveButton = new JButton("Save");
 
 	private boolean isAllInfoCorrectlyEntered() {
-		if (keyNameField.getText().isEmpty())
-			return false;
 		if (!emailField.getText().matches(".+[@].+[.].+"))
 			return false;
 		if (String.valueOf(passwordField.getPassword()).isEmpty())
@@ -44,12 +41,11 @@ public class WindowNewKeyPair extends JDialog {
 		// TODO @gavantee: Imas fieldove, uradi nesto
 		
 		WindowMain mainWindow = (WindowMain) this.getParent();
-		//mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), true /*isPrivate*/);
-		//mainWindow.addKeyFromOutside(Key.getDummytKeyObject(), false /*isPrivate*/);
-		Key key = new Key(keyNameField.getText(),
-				emailField.getText(),
-				String.valueOf(passwordField.getPassword()),
-				(IAsymmetricKeyAlgorithm) algoritmsBox.getSelectedItem());
+		Key.newKey(
+			emailField.getText(),
+			String.valueOf(passwordField.getPassword()),
+			(IAsymmetricKeyAlgorithm) algoritmsBox.getSelectedItem()
+		);
 		
 		this.dispose();
 		// throw new NotImplementedException(); // TODO @gavantee: delete this when done
@@ -59,8 +55,6 @@ public class WindowNewKeyPair extends JDialog {
 		super(mainWindow, true);
 		this.setLayout(new GridLayout(6, 2));
 
-		this.add(new JLabel("Key name"));
-		this.add(keyNameField);
 		this.add(new JLabel("E-mail"));
 		this.add(emailField);
 		this.add(new JLabel("Algorithm"));

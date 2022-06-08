@@ -47,8 +47,8 @@ public class WindowMain extends JFrame {
 		tabsPane.setBounds(0, 0, windowX, horizontalBreak);
 
 		loadDataFromDisk();
-		privateKeyRingTab = new PrivateKeyRingPanel(privateKeys);
-		publicKeyRingTab = new PublicKeyRingPanel(publicKeys);
+		privateKeyRingTab = new PrivateKeyRingPanel();
+		publicKeyRingTab = new PublicKeyRingPanel();
 		tabsPane.add("Private Key Ring", privateKeyRingTab);
 		tabsPane.add("Public Key Ring", publicKeyRingTab);
 
@@ -112,23 +112,24 @@ public class WindowMain extends JFrame {
 
 	@SuppressWarnings("unchecked")
 	public void loadDataFromDisk() {
-		try (ObjectInputStream privateKeysInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(Constants.privateKeysPersistanceFile)));
-				ObjectInputStream publicKeysInputStream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(Constants.publicKeysPersistanceFile)))) {
-
-			privateKeys = (Vector<Key>) privateKeysInputStream.readObject();
-			publicKeys = (Vector<Key>) publicKeysInputStream.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		RingCollections.init();
 	}
 
 	public void saveDataToDisk() {
-		try (ObjectOutputStream privateKeysOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(Constants.privateKeysPersistanceFile)));
-				ObjectOutputStream publicKeysOutputStream = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(Constants.publicKeysPersistanceFile)));) {
+        try {
+            BufferedOutputStream priv = new BufferedOutputStream(new FileOutputStream("myKeys"));
+			RingCollections.getPrivRings().encode(priv);
+	        priv.close();
 
-			privateKeysOutputStream.writeObject(privateKeys);
-			publicKeysOutputStream.writeObject(publicKeys);
+	        BufferedOutputStream myPub = new BufferedOutputStream(new FileOutputStream("myKeys.pub"));
+	        RingCollections.getMyPubRings().encode(myPub);
+	        myPub.close();
+	        
+	        BufferedOutputStream pub = new BufferedOutputStream(new FileOutputStream("publicKeys.pub"));
+	        RingCollections.getPubRings().encode(pub);
+	        pub.close();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -175,12 +176,11 @@ public class WindowMain extends JFrame {
 		if (JFileChooser.APPROVE_OPTION == keyFileChooser.showOpenDialog(this)) {
 			File selectedFile = keyFileChooser.getSelectedFile();
 
-			Key keyToImport = Key.getDummytKeyObject(); // TODO @gavantee: Importuj kljuc kako znas i umes
-
-			addKeyFromOutside(keyToImport, false /*isPrivate*/);
+			// TODO @gavantee: Importuj kljuc kako znas i umes
 
 			saveDataToDisk();
 			refreshTables();
+			throw new NotImplementedException();
 		}
 	}
 
@@ -207,7 +207,6 @@ public class WindowMain extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		RingCollections.init();
 		getInstance();
 	}
 

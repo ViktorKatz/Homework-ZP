@@ -1,5 +1,6 @@
 package etf.openpgp.kv180141dmd180153d.GUI;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,21 +25,8 @@ public class PrivateKeyRingPanel extends KeyRingPanel {
 		columnNames = new String[] { "Timestamp", "Key ID", "Public Key", "Encripted Private Key", "User ID" };
 	}
 
-	PrivateKeyRingPanel(Vector<Key> keys) {
-		super(keys);
-	}
-
-	@Override
-	protected List<String[]> getTableDataFromKeyVector(Vector<Key> keys) {
-		return keys.stream().map(k -> {
-			return new String[] {
-					k.getTimestampString(),
-					k.getKeyID(),
-					k.getPublicKey(),
-					k.getEncriptedPrivateKey(),
-					k.getEmail()
-			};
-		}).collect(Collectors.toList());
+	PrivateKeyRingPanel() {
+		super();
 	}
 	
 	public List<String[]> getTableDataFromRingCollection() {
@@ -52,8 +40,14 @@ public class PrivateKeyRingPanel extends KeyRingPanel {
 			String keyId = Long.toHexString(key.getKeyID());
 			String email = key.getUserIDs().next();
 			String ts = key.getPublicKey().getCreationTime().toString();
-			
-			res.add(new String[]{ts, keyId, "", "", email});
+			String pk = toHex(key.getPublicKey().getFingerprint());
+			String esk = "";
+			try {
+				esk = toHex(key.getEncoded());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			res.add(new String[]{ts, keyId, pk, esk, email});
 		}
 		return res;
 	}
