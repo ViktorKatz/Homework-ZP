@@ -98,10 +98,6 @@ public class Key implements Serializable {
 		}
 
 	}
-
-	public void exportToFile(String path) {
-		throw new NotImplementedException(); // TODO @gavantee: treba nam i eksportovanje jednog kljuca u fajl, ako cemo mi nekom da posaljemo svoj javni
-	}
 	
 	public String encryptMessage(String message) {
 		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara, mozda najbolje da prihvatas fajl parametar 

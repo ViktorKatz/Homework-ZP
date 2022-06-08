@@ -17,8 +17,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
+
 import etf.openpgp.kv180141dmd180153d.Key;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowEncryptMessage extends JDialog {
 
@@ -32,15 +36,15 @@ public class WindowEncryptMessage extends JDialog {
 	private final JTextField inputFilePeek = new JTextField("Select file to encrypt");
 	private File selectedFile = null;
 
-	private JComboBox<Key> signKeysComboBox;
-	private JList<Key> encryptKeysList;
+	private JComboBox<PGPSecretKeyRing> signKeysComboBox;
+	private JList<PGPPublicKeyRing> encryptKeysList;
 
 	private JCheckBox compressCheckBox = new JCheckBox("Compress message");
 	private JCheckBox convertToRadixCheckBox = new JCheckBox("Convert to radix-64");
 
 	private final JButton sendToFileButton = new JButton("Send (export to file)");
 
-	public WindowEncryptMessage(JFrame mainWindow, Vector<Key> availableEncryptionKeys, Vector<Key> availableSignKeys) {
+	public WindowEncryptMessage(JFrame mainWindow, Vector<PGPPublicKeyRing> pubRings, Vector<PGPSecretKeyRing> privRings) {
 		super(mainWindow, true);
 		this.setLayout(new GridLayout(5, 2));
 
@@ -53,17 +57,17 @@ public class WindowEncryptMessage extends JDialog {
 		});
 		inputFilePeek.setEditable(false);
 
-		encryptKeysList = new JList<Key>(availableEncryptionKeys);
+		encryptKeysList = new JList<PGPPublicKeyRing>(pubRings);
 		JScrollPane encryptKeysPane = new JScrollPane(encryptKeysList);
 
-		Vector<Key> availableSignKeysWithNone = new Vector<Key>(availableSignKeys);
+		Vector<PGPSecretKeyRing> availableSignKeysWithNone = new Vector<PGPSecretKeyRing>(privRings);
 		availableSignKeysWithNone.add(0, null);
-		signKeysComboBox = new JComboBox<Key>(availableSignKeysWithNone);
+		signKeysComboBox = new JComboBox<PGPSecretKeyRing>(privRings);
 
 		sendToFileButton.addActionListener(e -> {
 			File selectedFile = this.selectedFile;
-			Key privateKey = (Key) signKeysComboBox.getSelectedItem();
-			List<Key> publicKeys = encryptKeysList.getSelectedValuesList();
+			PGPSecretKeyRing privateKey = (PGPSecretKeyRing) signKeysComboBox.getSelectedItem();
+			List<PGPPublicKeyRing> publicKeys = encryptKeysList.getSelectedValuesList();
 			boolean compressZip = compressCheckBox.isSelected();
 			boolean convertToRadix = convertToRadixCheckBox.isSelected();
 			
@@ -74,22 +78,22 @@ public class WindowEncryptMessage extends JDialog {
 			
 			if(null != privateKey) {
 				String password = JOptionPane.showInputDialog(this, "Password for " + signKeysComboBox.getSelectedItem());
-				if(!privateKey.checkPassword(password)) {
-					JOptionPane.showMessageDialog(this, "Wrong password!");
-					return;
-				}
+				//if(!privateKey.checkPassword(password)) {
+					//JOptionPane.showMessageDialog(this, "Wrong password!");
+					//return;
+				//}
 			}
 			
 			// TODO @gavantee: uradi nesto sa ovim varijablama koje sam ostavio na pocetku funkcije.
 			
 			JFileChooser outputFileChooser = new JFileChooser(".");
 			if (JFileChooser.APPROVE_OPTION == outputFileChooser.showSaveDialog(this)) {
-				throw new NotImplementedException(); // TODO @gavantee: Enkriptovanu poruku sacuvaj u fajl
+				//throw new NotImplementedException(); // TODO @gavantee: Enkriptovanu poruku sacuvaj u fajl
 			}
 		});
 
-		this.add(chooseInputFileButton);
 		this.add(inputFilePeek);
+		this.add(chooseInputFileButton);
 		this.add(new JLabel("Encryption keys:"));
 		this.add(encryptKeysPane);
 		this.add(new JLabel("Sign key:"));

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -84,7 +85,7 @@ public class RingCollections {
 					pubRings = PGPPublicKeyRingCollection.removePublicKeyRing(pubRings, pubRings.getPublicKeyRing(id));
 				} catch (PGPException e) {
 					// TODO Auto-generated catch block
-					// e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		}
@@ -149,5 +150,21 @@ public class RingCollections {
 			return false;
 		}
 		return true;
+	}
+	
+	public static Vector<PGPPublicKeyRing> getPubVec() {
+		Vector<PGPPublicKeyRing> pubVec = new Vector<PGPPublicKeyRing>();
+		for (PGPPublicKeyRing ring : pubRings) {
+			pubVec.add(ring);
+		}
+		return pubVec;
+	}
+	
+	public static Vector<PGPSecretKeyRing> getPrivVec() {
+		Vector<PGPSecretKeyRing> privVec = new Vector<PGPSecretKeyRing>();
+		for (PGPSecretKeyRing ring : privRings) {
+			privVec.add(ring);
+		}
+		return privVec;
 	}
 }

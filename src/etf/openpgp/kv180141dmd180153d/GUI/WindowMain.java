@@ -83,7 +83,7 @@ public class WindowMain extends JFrame {
 		buttonPanel.add(deleteSelectedKeysButton);
 
 		JButton sendMessageButton = new JButton("Send message");
-		sendMessageButton.addActionListener(e -> new WindowEncryptMessage(this, null, null));
+		sendMessageButton.addActionListener(e -> new WindowEncryptMessage(this, RingCollections.getPubVec(), RingCollections.getPrivVec()));
 		buttonPanel.add(sendMessageButton);
 
 		JButton receiveMessageButton = new JButton("Receive message");
