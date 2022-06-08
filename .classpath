@@ -7,5 +7,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="bcpg-jdk18on-171.jar"/>
+	<classpathentry kind="lib" path="bcprov-jdk18on-171.jar"/>
+	<classpathentry kind="lib" path="bcutil-jdk18on-171.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

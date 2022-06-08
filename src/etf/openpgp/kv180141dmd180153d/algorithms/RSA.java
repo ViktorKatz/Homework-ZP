@@ -26,4 +26,7 @@ public class RSA extends KeyAlgotithm implements IAsymmetricKeyAlgorithm {
 		return String.format("RSA with %d-bit key", keySize);
 	}
 
+	public int getKeySize() {
+		return keySize;
+	}
 }

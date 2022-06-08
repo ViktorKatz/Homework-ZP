@@ -16,6 +16,7 @@ import javax.swing.*;
 
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
+import etf.openpgp.kv180141dmd180153d.RingCollections;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowMain extends JFrame {
@@ -68,6 +69,8 @@ public class WindowMain extends JFrame {
 		this.setLayout(null);
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
+		
+		RingCollections.init();
 	}
 
 	private void addButtons() {
