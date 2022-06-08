@@ -14,7 +14,7 @@ public abstract class KeyRingPanel extends JPanel {
 
 	private static final long serialVersionUID = -5802339836769941121L;
 
-	protected static String[] columnNames;
+	protected String[] columnNames;
 
 	protected JScrollPane scrollPane;
 	protected JTable table;

@@ -51,10 +51,9 @@ public class PrivateKeyRingPanel extends KeyRingPanel {
 			PGPSecretKey key = ring.getSecretKey();
 			String keyId = Long.toString(key.getKeyID());
 			String email = key.getUserIDs().next();
-			System.out.println("email: " + email);
 			String ts = Long.toString(key.getPublicKey().getValidSeconds());
 			
-			res.add(new String[]{ts, keyId, email, email, email});
+			res.add(new String[]{ts, keyId, "", "", email});
 		}
 		return res;
 	}
