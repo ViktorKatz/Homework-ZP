@@ -20,7 +20,6 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.RingCollections;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowMain extends JFrame {
 	private static final long serialVersionUID = 1L;
