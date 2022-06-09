@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.algorithms.IAsymmetricKeyAlgorithm;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowNewKeyPair extends JDialog {
 
