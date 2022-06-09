@@ -14,10 +14,12 @@ import java.util.Vector;
 
 import javax.swing.*;
 
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.RingCollections;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowMain extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -83,7 +85,7 @@ public class WindowMain extends JFrame {
 		buttonPanel.add(deleteSelectedKeysButton);
 
 		JButton sendMessageButton = new JButton("Send message");
-		sendMessageButton.addActionListener(e -> new WindowEncryptMessage(this, null, null));
+		sendMessageButton.addActionListener(e -> new WindowEncryptMessage(this, RingCollections.getPubVec(), RingCollections.getPrivVec()));
 		buttonPanel.add(sendMessageButton);
 
 		JButton receiveMessageButton = new JButton("Receive message");
@@ -114,10 +116,6 @@ public class WindowMain extends JFrame {
 			RingCollections.getPrivRings().encode(priv);
 	        priv.close();
 
-	        BufferedOutputStream myPub = new BufferedOutputStream(new FileOutputStream("myKeys.pub"));
-	        RingCollections.getMyPubRings().encode(myPub);
-	        myPub.close();
-	        
 	        BufferedOutputStream pub = new BufferedOutputStream(new FileOutputStream("publicKeys.pub"));
 	        RingCollections.getPubRings().encode(pub);
 	        pub.close();
@@ -146,12 +144,21 @@ public class WindowMain extends JFrame {
 		JFileChooser messageFileChooser = new JFileChooser(".");
 		if (JFileChooser.APPROVE_OPTION == messageFileChooser.showOpenDialog(this)) {
 			File selectedFile = messageFileChooser.getSelectedFile();
-
-			String password = JOptionPane.showInputDialog(this, "Please enter password (or leave empty): ");
-			// TODO @gavantee: Imas fajl, imas password, sacuvaj fajl koristeci 
-			// JFileChooser decodedMsgFileChooser = new JFileChooser(".");
-			// decodedMsgFileChooser.showSaveDialog(this)
-
+			long keyId = Key.getDecryptKeyId(selectedFile);
+			if (keyId != 0) {
+				try {
+					PGPSecretKeyRing privKey = RingCollections.getPrivRings().getSecretKeyRing(keyId);
+					if (privKey == null) {
+						JOptionPane.showMessageDialog(this, "No matching key found", "Cannot decrypt", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					String password = JOptionPane.showInputDialog(this, "Please enter password for " + privKey.getPublicKey().getUserIDs().next() + " - " + Long.toHexString(privKey.getPublicKey().getKeyID()) + ": ");
+					String ret = Key.receiveMessage(selectedFile, privKey, password);
+					JOptionPane.showMessageDialog(this, ret, "Cannot import key", JOptionPane.WARNING_MESSAGE);
+				} catch (PGPException e) {
+					e.printStackTrace();
+				}
+			}
 			refreshTables();
 		}
 	}
@@ -187,6 +194,21 @@ public class WindowMain extends JFrame {
 				File selectedFile = keyFileChooser.getSelectedFile();
 
 				RingCollections.exportPriv(id, selectedFile);
+
+				refreshTables();
+			}
+		}
+		else {
+			if (publicKeyRingTab.getSelectedKeys().length != 1) {
+				JOptionPane.showMessageDialog(this, "Please select one key", "Cannot export key", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			long id = publicKeyRingTab.getSelectedKeys()[0];
+			JFileChooser keyFileChooser = new JFileChooser(".");
+			if (JFileChooser.APPROVE_OPTION == keyFileChooser.showSaveDialog(this)) {
+				File selectedFile = keyFileChooser.getSelectedFile();
+
+				RingCollections.exportPub(id, selectedFile);
 
 				refreshTables();
 			}

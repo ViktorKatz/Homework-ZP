@@ -32,12 +32,11 @@ public class PublicKeyRingPanel extends KeyRingPanel {
 	}
 	
 	public List<String[]> getTableDataFromRingCollection() {
-		PGPPublicKeyRingCollection myPubRings = RingCollections.getMyPubRings();
 		PGPPublicKeyRingCollection pubRings = RingCollections.getPubRings();
 		PGPPublicKeyRing ring = null;
 		boolean paired = false;
 		List<String[]> res = new ArrayList<String[]>();
-		Iterator<PGPPublicKeyRing> iter = myPubRings.getKeyRings();
+		Iterator<PGPPublicKeyRing> iter = pubRings.getKeyRings();
 		if (paired && iter.hasNext())
 			ring = iter.next();
 		else {

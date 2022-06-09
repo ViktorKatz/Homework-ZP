@@ -12,9 +12,6 @@ public final class Constants {
 	public static final Vector<IAsymmetricKeyAlgorithm> supportedAsymetricAlgorithms = new Vector<IAsymmetricKeyAlgorithm>();
 	public static final Vector<ISymmetricKeyAlgorithm> supportedSymetricAlgorithms = new Vector<ISymmetricKeyAlgorithm>();
 	
-	public static final String privateKeysPersistanceFile = "./privateKeys";
-	public static final String publicKeysPersistanceFile = "./publicKeys";
-	
 	
 	static {
 		supportedAsymetricAlgorithms.add(new RSA(1024));

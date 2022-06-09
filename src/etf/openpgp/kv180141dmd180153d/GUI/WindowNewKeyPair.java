@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.algorithms.IAsymmetricKeyAlgorithm;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowNewKeyPair extends JDialog {
 
@@ -37,9 +36,7 @@ public class WindowNewKeyPair extends JDialog {
 		return true;
 	}
 
-	private void saveKey() {		
-		// TODO @gavantee: Imas fieldove, uradi nesto
-		
+	private void saveKey() {				
 		WindowMain mainWindow = (WindowMain) this.getParent();
 		Key.newKey(
 			emailField.getText(),
@@ -48,14 +45,13 @@ public class WindowNewKeyPair extends JDialog {
 		);
 		
 		this.dispose();
-		// throw new NotImplementedException(); // TODO @gavantee: delete this when done
 	}
 
 	public WindowNewKeyPair(JFrame mainWindow) {
 		super(mainWindow, true);
 		this.setLayout(new GridLayout(6, 2));
 
-		this.add(new JLabel("E-mail"));
+		this.add(new JLabel("UserId"));
 		this.add(emailField);
 		this.add(new JLabel("Algorithm"));
 		this.add(algoritmsBox);
