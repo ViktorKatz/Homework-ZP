@@ -191,6 +191,21 @@ public class WindowMain extends JFrame {
 				refreshTables();
 			}
 		}
+		else {
+			if (publicKeyRingTab.getSelectedKeys().length != 1) {
+				JOptionPane.showMessageDialog(this, "Please select one key", "Cannot export key", JOptionPane.WARNING_MESSAGE);
+				return;
+			}
+			long id = publicKeyRingTab.getSelectedKeys()[0];
+			JFileChooser keyFileChooser = new JFileChooser(".");
+			if (JFileChooser.APPROVE_OPTION == keyFileChooser.showSaveDialog(this)) {
+				File selectedFile = keyFileChooser.getSelectedFile();
+
+				RingCollections.exportPub(id, selectedFile);
+
+				refreshTables();
+			}
+		}
 
 
 	}

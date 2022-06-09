@@ -20,3 +20,8 @@ Promena plana:
 * kad se napravi privatni/javni par samo se u privatne stavlja, ima dugme da exportuje javni iz privatnog a tvoj javni ti nigde drugo ni ne treba, ako baš oćeš moš da ga eksportuješ pa importuješ kao samo javni
 * import i export dugmići se odnose na klučeve za trenutno otvoren panel i import baca grešku ako ne odgovara fajl.
 * šifra se traži samo za potpis/šifrovanje, za import/eksport ne mora pošto je svejedno ključ beskoristan bez šifre
+
+TODO:
+* da se dijalog za slanje gasi kad se posalje
+* poruka da je greska kad ono smece vrati false
+* DEKRIPCIJA I VERIFIKACIJA

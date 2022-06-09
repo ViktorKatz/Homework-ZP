@@ -6,12 +6,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPrivateKey;
+import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
@@ -52,7 +54,7 @@ public class RingCollections {
 	
 	public static void addPrivKey(PGPSecretKeyRing privRing, PGPPublicKeyRing pubRing) {
 		privRings = PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
-		pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
+		//pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
 	}
 	
 	
@@ -96,7 +98,10 @@ public class RingCollections {
 	public static void exportPubFromPriv(long id, File selectedFile) {
         try (ArmoredOutputStream out = new ArmoredOutputStream(
                 new FileOutputStream(selectedFile))) {
-        	privRings.getSecretKeyRing(id).getPublicKey().encode(out);
+        	List<PGPPublicKey> keys = new ArrayList<>();
+        	keys.add(privRings.getSecretKeyRing(id).getPublicKey());
+        	PGPPublicKeyRing ring = new PGPPublicKeyRing(keys);
+        	ring.encode(out);
         } catch (IOException | PGPException e) {
             e.printStackTrace();
         }
@@ -105,7 +110,7 @@ public class RingCollections {
 	public static void exportPub(long id, File selectedFile) {
         try (ArmoredOutputStream out = new ArmoredOutputStream(
                 new FileOutputStream(selectedFile))) {
-        	pubRings.getPublicKeyRing(id).getPublicKey().encode(out);
+        	pubRings.getPublicKeyRing(id).encode(out);
         } catch (IOException | PGPException e) {
             e.printStackTrace();
         }
@@ -114,9 +119,7 @@ public class RingCollections {
 	public static void exportPriv(long id, File selectedFile) {
         try (ArmoredOutputStream out = new ArmoredOutputStream(
                 new FileOutputStream(selectedFile))) {
-        	//privRings.getSecretKeyRing(id).getSecretKey().extractPrivateKey(new JcePBESecretKeyDecryptorBuilder()
-        		//     .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(password.toCharArray())).encode(out);
-        	privRings.getSecretKeyRing(id).getSecretKey().encode(out);
+        	privRings.getSecretKeyRing(id).encode(out);
         	
         } catch (IOException | PGPException e) {
             e.printStackTrace();

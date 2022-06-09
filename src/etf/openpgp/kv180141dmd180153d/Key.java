@@ -97,7 +97,7 @@ public class Key implements Serializable {
 	        
 	        PBESecretKeyEncryptor encryptor = (new BcPBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256)).build(password.toCharArray());
 	        PGPKeyRingGenerator keyRingGen = new PGPKeyRingGenerator(
-	        		PGPSignature.POSITIVE_CERTIFICATION,
+	        		PGPPublicKey.RSA_SIGN,
 	                signKeyPair,
 	                email,
 	                new BcPGPDigestCalculatorProvider().get(HashAlgorithmTags.SHA1),
@@ -204,10 +204,9 @@ public class Key implements Serializable {
                 signGen.generateOnePassVersion(false).encode(out3);
 				
 			} catch (PGPException e) {
-				// TODO Auto-generated catch block
+				e.printStackTrace();
 				return false;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;
 			}
