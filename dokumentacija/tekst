@@ -1,0 +1,67 @@
+Klase:
+  Constants:
+    Konstante vezane za dostupne algoritme
+  Key:
+    Statičke funkcije koje obavljaju operacije nad ključevima
+    
+    Funkcije:
+      public static void newKey(String email, String password, IAsymmetricKeyAlgorithm algorithm):
+        email - userId za ključ, najčešće email
+        password - šifra pod kojom se čuva privatni ključ
+        algorithm - asimetrični algoritam koji se koristi. Uvek je RSA ali keySize varira
+
+        Generiše se novi par RSA ključeva i dodaju se u RingCollections
+
+      public static boolean sendMessage(File infile, File outfile, int privateKeyId, int[] publicKeyIds, boolean compressZip, boolean convertToRadix, int symmAlg, String password):
+        infile - fajl sa ulaznom porukom
+        outfile - fajl za izlaznu poruku
+        privateKeyId - indeks + 1 privatnog ključa za potpis u skupu svih privatnih Ključeva, ili 0 ukoliko se ne vrši potpisivanje
+        publicKeyIds - niz indeksa javnih ključeva koji se koriste za šifrovanje, prazan ako se ne vrši šifrovanje
+        compressZip - označava da li se vrši kompresija
+        covertToRadix - označava da li se vrši transformacija u radix64 format
+        symmAlg - označava simetrični algoritam korišćen za šifrovanje, 0 - 3DES, 1 - CAST5
+        password - šifra pod kojom se čuva privatni ključ
+
+        Prvo se pronalaze odgovarajući ključevi na osnovu ideksa. Zatim se na osnovu parametara redom vrši:
+          otvaranje običnog OutputStream-a ili ArmoredOutoutStream-a za radix64 format
+          priprema za šifrovanje na osnovu javnih ključeva i otvaranje novog OutputStreama
+          priprema za kompresiju i otvaranje novog OutputStreama
+          priprema za potpisivanje
+          otvaranje novog OutputStreama koji uzima podatke direktno iz ulaznog fajla
+          OutputSteam-ovi se obmotavaju tako da je njihov redosled otvaranja obrnut od redosleda operacija prilikom generisanja poruke
+          Petlja koja isčitava podatke i upisuje ih u poslednji otvoren OutputStream
+
+
+  RingCollections:
+    Statički podaci koji prestavljaju skup svih ključeva u sistemu i statičke funkcije koje se bave operacijama nad njima.
+
+    Polja:
+      pubRings - kolekcija ringova svih javnih ključeva
+      privRings - kolekcija ringova svih privatnih ključeva
+
+    Funkcije:
+      public static void init():
+        učitavanje ključeva iz fajlova za perzistenciju izmedju pokretanja
+
+      public static void addPubKey(PGPPublicKeyRing pubRing):
+        dodavanje javnog ringa u skup svih javnih ringova
+
+      public static void addPrivKey(PGPSecretKeyRing privRing, PGPPublicKeyRing pubRing):
+        dodavanje privatnog i javnog ringa u odgovarajuće kolekcije
+
+	    public static void remove(long[] ids, boolean priv):
+        ids - niz kezId za brisanje
+        priv - označava da li se radi o javnom ili privatnom ključu (možda bi imalo smisla da se obrišu i oba)
+      
+      public static void exportPubFromPriv(long id, File selectedFile),
+      public static void exportPub(long id, File selectedFile),
+      public static void exportPriv(long id, File selectedFile):  
+        id - keyId ključa koji se izvozi
+        selectedFile - fajl u koji se izvozi
+
+        Izvozi odgovaraći ključ u odgovarajući fajl
+
+      public static boolean importPub(File file),
+      public static boolean importPriv(File file):
+        
+        Uvozi ključ iz odgovarajućeg fajla
