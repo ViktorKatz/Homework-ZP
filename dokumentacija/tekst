@@ -30,7 +30,17 @@ Klase:
           otvaranje novog OutputStreama koji uzima podatke direktno iz ulaznog fajla
           OutputSteam-ovi se obmotavaju tako da je njihov redosled otvaranja obrnut od redosleda operacija prilikom generisanja poruke
           Petlja koja isčitava podatke i upisuje ih u poslednji otvoren OutputStream
+          
+        public static long getDecryptKeyId(File filein):
+          filein - datoteka sa šifrovanom porukom
+          ovo se koristi za pronalaženje odgovarajućeg ključa da bi se korisniku prikazalo za koji ključ unosi šifru
 
+        public static String receiveMessage(File filein, PGPSecretKeyRing privKey, String password):
+          filein - datoteka sa šifrovanom porukom
+          privKey - ključ izvučen prethodnom funkcijom
+          password - šifra pod kojom se čuva privatni ključ
+
+        vraća poruku koja se ispisuje nakon izlaza iz funkcije
 
   RingCollections:
     Statički podaci koji prestavljaju skup svih ključeva u sistemu i statičke funkcije koje se bave operacijama nad njima.
