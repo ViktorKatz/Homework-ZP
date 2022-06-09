@@ -20,7 +20,6 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.RingCollections;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class WindowMain extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -153,17 +152,13 @@ public class WindowMain extends JFrame {
 						JOptionPane.showMessageDialog(this, "No matching key found", "Cannot decrypt", JOptionPane.WARNING_MESSAGE);
 						return;
 					}
-					System.out.println(Long.toHexString(keyId));
 					String password = JOptionPane.showInputDialog(this, "Please enter password for " + privKey.getPublicKey().getUserIDs().next() + " - " + Long.toHexString(privKey.getPublicKey().getKeyID()) + ": ");
 					String ret = Key.receiveMessage(selectedFile, privKey, password);
+					JOptionPane.showMessageDialog(this, ret, "Cannot import key", JOptionPane.WARNING_MESSAGE);
 				} catch (PGPException e) {
 					e.printStackTrace();
 				}
 			}
-			// TODO @gavantee: Imas fajl, imas password, sacuvaj fajl koristeci 
-			// JFileChooser decodedMsgFileChooser = new JFileChooser(".");
-			// decodedMsgFileChooser.showSaveDialog(this)
-
 			refreshTables();
 		}
 	}

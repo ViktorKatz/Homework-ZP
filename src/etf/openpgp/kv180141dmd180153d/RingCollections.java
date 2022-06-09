@@ -51,7 +51,6 @@ public class RingCollections {
 		pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
 	}
 	
-	
 	public static PGPSecretKeyRingCollection getPrivRings() {
 		return privRings;
 	}

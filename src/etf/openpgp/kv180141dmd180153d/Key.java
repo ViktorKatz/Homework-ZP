@@ -56,6 +56,7 @@ import org.bouncycastle.openpgp.operator.bc.BcKeyFingerprintCalculator;
 import org.bouncycastle.openpgp.operator.bc.BcPBESecretKeyDecryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPBESecretKeyEncryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.bc.BcPGPContentVerifierBuilderProvider;
 import org.bouncycastle.openpgp.operator.bc.BcPGPDataEncryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPGPDigestCalculatorProvider;
 import org.bouncycastle.openpgp.operator.bc.BcPGPKeyPair;
@@ -75,7 +76,7 @@ import org.bouncycastle.oer.its.ieee1609dot2.basetypes.SymmAlgorithm;
 public class Key implements Serializable {
 	
 	private static final long serialVersionUID = -7062109191445608706L;
-	
+		
 	public static void newKey(String email, String password, IAsymmetricKeyAlgorithm algorithm) {
 		int keySize = algorithm.getKeySize();
 		RSAKeyPairGenerator keyPairGen = new RSAKeyPairGenerator();
@@ -154,7 +155,6 @@ public class Key implements Serializable {
 		if (privateKeyId > 0) {
 			privKey = RingCollections.getPrivRing(privateKeyId - 1);
 		}
-		if (privKey != null) System.out.println("private: " + privKey.getPublicKey().getUserIDs().next());
 		for (int id : publicKeyIds)
 			pubKeys.add(RingCollections.getPubRing(id));
 		
@@ -187,7 +187,6 @@ public class Key implements Serializable {
         		if(pk.isEncryptionKey())
         			break;
         	}
-        	if (pk.getUserIDs().hasNext()) System.out.println("public: " + pk.getUserIDs().next());
             encDataGen.addMethod(new BcPublicKeyKeyEncryptionMethodGenerator(pk));
             try {
 				out2 = encDataGen.open(out, new byte[65536]);
@@ -273,7 +272,8 @@ public class Key implements Serializable {
 	    		PBESecretKeyDecryptor decryptor = new BcPBESecretKeyDecryptorBuilder(
 	                    new BcPGPDigestCalculatorProvider()).build(password.toCharArray());
 	    		
-	    		PGPPrivateKey pk = privKey.getSecretKey().extractPrivateKey(decryptor);
+	    		PGPPrivateKey pk = RingCollections.getPrivRings().getSecretKey(data.getKeyID()).extractPrivateKey(decryptor);
+
 	    		InputStream is = ((PGPPublicKeyEncryptedData) data).getDataStream(new BcPublicKeyDataDecryptorFactory(pk));
 	            objFact = new PGPObjectFactory(is, new BcKeyFingerprintCalculator());
 	        }
@@ -313,10 +313,20 @@ public class Key implements Serializable {
 	        }
 	        
 	        String ret = "";
-	        for (int i = 0; i < opSigList.size(); ++i) {
-	        	PGPOnePassSignature opSig = opSigList.get(0);
-	        	PGPPublicKey pubKey = RingCollections.getPubRings().getPublicKey(opSig.getKeyID());
+	        PGPOnePassSignature opSig = opSigList.get(0);
+	        PGPPublicKey pubKey = RingCollections.getPubRings().getPublicKey(opSig.getKeyID());
+	        if (pubKey == null) {
+	        	return "Signed by unknown";
 	        }
+	        opSig.init(new BcPGPContentVerifierBuilderProvider(), pubKey);
+	        opSig.update(output);
+	        PGPSignature signature = sigList.get(0);
+            if (!opSig.verify(signature)) {
+                return "Cant verify signature";
+            }
+	        
+	        return "Signed by: " + pubKey.getUserIDs().next(); 
+	        
 		} catch (IOException | PGPException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
