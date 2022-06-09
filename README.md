@@ -25,3 +25,5 @@ TODO:
 * da se dijalog za slanje gasi kad se posalje
 * poruka da je greska kad ono smece vrati false
 * DEKRIPCIJA I VERIFIKACIJA
+
+mogo sam gitignorovati keys/ al neka ih da ti se nadju

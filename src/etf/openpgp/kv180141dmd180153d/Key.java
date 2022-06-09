@@ -1,10 +1,12 @@
 package etf.openpgp.kv180141dmd180153d;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -24,13 +26,18 @@ import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
 import org.bouncycastle.openpgp.PGPEncryptedData;
 import org.bouncycastle.openpgp.PGPEncryptedDataGenerator;
+import org.bouncycastle.openpgp.PGPEncryptedDataList;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPKeyPair;
 import org.bouncycastle.openpgp.PGPKeyRingGenerator;
 import org.bouncycastle.openpgp.PGPLiteralData;
 import org.bouncycastle.openpgp.PGPLiteralDataGenerator;
+import org.bouncycastle.openpgp.PGPObjectFactory;
+import org.bouncycastle.openpgp.PGPOnePassSignature;
+import org.bouncycastle.openpgp.PGPOnePassSignatureList;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPPublicKey;
+import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKey;
@@ -38,18 +45,23 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.PGPSignatureGenerator;
+import org.bouncycastle.openpgp.PGPSignatureList;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.bouncycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.PGPDigestCalculator;
+import org.bouncycastle.openpgp.operator.bc.BcKeyFingerprintCalculator;
 import org.bouncycastle.openpgp.operator.bc.BcPBESecretKeyDecryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPBESecretKeyEncryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPGPDataEncryptorBuilder;
 import org.bouncycastle.openpgp.operator.bc.BcPGPDigestCalculatorProvider;
 import org.bouncycastle.openpgp.operator.bc.BcPGPKeyPair;
+import org.bouncycastle.openpgp.operator.bc.BcPublicKeyDataDecryptorFactory;
 import org.bouncycastle.openpgp.operator.bc.BcPublicKeyKeyEncryptionMethodGenerator;
+import org.bouncycastle.util.io.Streams;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
@@ -63,11 +75,7 @@ import org.bouncycastle.oer.its.ieee1609dot2.basetypes.SymmAlgorithm;
 public class Key implements Serializable {
 	
 	private static final long serialVersionUID = -7062109191445608706L;
-
-	Key(String filepath) { // Import one key from file
-		throw new NotImplementedException(); // TODO @gavantee: treba nam ucitavanje iz fajla, "ako nam neko posalje svoj javni kljuc" uuuuu. Promeni parametar na bas fajl, ako zelis.
-	}
-
+	
 	public static void newKey(String email, String password, IAsymmetricKeyAlgorithm algorithm) {
 		int keySize = algorithm.getKeySize();
 		RSAKeyPairGenerator keyPairGen = new RSAKeyPairGenerator();
@@ -121,8 +129,21 @@ public class Key implements Serializable {
 	}
 
 	
-	public String decryptMessage(String encryptedMessage) {
-		throw new NotImplementedException(); // TODO @gavantee: Slobodno promeni tipove, kako god ti odgovara, mozda najbolje da prihvatas fajl parametar
+	public static long getDecryptKeyId(File filein) {
+        PGPObjectFactory objFact;
+		try {
+			objFact = new PGPObjectFactory(PGPUtil.getDecoderStream(new FileInputStream(filein)), new BcKeyFingerprintCalculator());
+	        Object obj = objFact.nextObject();
+	        if (obj instanceof PGPEncryptedDataList) {
+	    		Iterator<PGPEncryptedData> iter = ((PGPEncryptedDataList) obj).getEncryptedDataObjects();
+	    		PGPPublicKeyEncryptedData data = (PGPPublicKeyEncryptedData) iter.next();
+	    		return data.getKeyID();
+	        }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	public static boolean sendMessage(File infile, File outfile, int privateKeyId, int[] publicKeyIds, boolean compressZip,
@@ -237,5 +258,70 @@ public class Key implements Serializable {
 			return false;
 		}
 		return true;
+	}
+
+
+	public static String receiveMessage(File filein, PGPSecretKeyRing privKey, String password) {
+		PGPObjectFactory objFact;
+		try {
+			objFact = new PGPObjectFactory(PGPUtil.getDecoderStream(new FileInputStream(filein)), new BcKeyFingerprintCalculator());
+	        Object obj = objFact.nextObject();
+	        if (obj instanceof PGPEncryptedDataList) {
+	    		Iterator<PGPEncryptedData> iter = ((PGPEncryptedDataList) obj).getEncryptedDataObjects();
+	    		PGPPublicKeyEncryptedData data = (PGPPublicKeyEncryptedData) iter.next();
+	    		
+	    		PBESecretKeyDecryptor decryptor = new BcPBESecretKeyDecryptorBuilder(
+	                    new BcPGPDigestCalculatorProvider()).build(password.toCharArray());
+	    		
+	    		PGPPrivateKey pk = privKey.getSecretKey().extractPrivateKey(decryptor);
+	    		InputStream is = ((PGPPublicKeyEncryptedData) data).getDataStream(new BcPublicKeyDataDecryptorFactory(pk));
+	            objFact = new PGPObjectFactory(is, new BcKeyFingerprintCalculator());
+	        }
+	        
+	        PGPOnePassSignatureList opSigList = null;
+	        PGPSignatureList sigList = null;
+	        PGPCompressedData compData;
+
+	        ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        while ((obj = objFact.nextObject()) != null) {
+	            if (obj instanceof PGPLiteralData) {
+
+	                Streams.pipeAll(((PGPLiteralData) obj).getInputStream(), out);
+	            }
+	            if (obj instanceof PGPCompressedData) {
+	                compData = (PGPCompressedData) obj;
+	                objFact = new PGPObjectFactory(compData.getDataStream(), new BcKeyFingerprintCalculator());
+	                obj = objFact.nextObject();
+	            }
+	            if (obj instanceof PGPOnePassSignatureList) {
+	                opSigList = (PGPOnePassSignatureList) obj;
+	            }
+	            if (obj instanceof PGPSignatureList) {
+	                sigList = (PGPSignatureList) obj;
+	            }
+	        }
+	        
+	        out.close();
+	        OutputStream os = new FileOutputStream(filein.getAbsoluteFile() + "-dec");
+	        os.write(out.toByteArray());
+	        os.close();
+
+	        byte[] output = out.toByteArray();
+
+	        if (opSigList == null || sigList == null) {
+	            return "Unsigned";
+	        }
+	        
+	        String ret = "";
+	        for (int i = 0; i < opSigList.size(); ++i) {
+	        	PGPOnePassSignature opSig = opSigList.get(0);
+	        	PGPPublicKey pubKey = RingCollections.getPubRings().getPublicKey(opSig.getKeyID());
+	        }
+		} catch (IOException | PGPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return "Error Occured";
 	}
 }

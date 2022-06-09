@@ -84,10 +84,6 @@ public class WindowEncryptMessage extends JDialog {
 			String password = "";
 			if(privateKey > 0) {
 				password = JOptionPane.showInputDialog(this, "Password for " + signKeysComboBox.getSelectedItem());
-				//if(!privateKey.checkPassword(password)) {
-					//JOptionPane.showMessageDialog(this, "Wrong password!");
-					//return;
-				//}
 			}
 	
 			JFileChooser outputFileChooser = new JFileChooser(".");

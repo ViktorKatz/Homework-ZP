@@ -52,7 +52,7 @@ public class WindowNewKeyPair extends JDialog {
 		super(mainWindow, true);
 		this.setLayout(new GridLayout(6, 2));
 
-		this.add(new JLabel("E-mail"));
+		this.add(new JLabel("UserId"));
 		this.add(emailField);
 		this.add(new JLabel("Algorithm"));
 		this.add(algoritmsBox);

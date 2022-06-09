@@ -14,6 +14,9 @@ import java.util.Vector;
 
 import javax.swing.*;
 
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+
 import etf.openpgp.kv180141dmd180153d.Constants;
 import etf.openpgp.kv180141dmd180153d.Key;
 import etf.openpgp.kv180141dmd180153d.RingCollections;
@@ -114,10 +117,6 @@ public class WindowMain extends JFrame {
 			RingCollections.getPrivRings().encode(priv);
 	        priv.close();
 
-	        BufferedOutputStream myPub = new BufferedOutputStream(new FileOutputStream("myKeys.pub"));
-	        RingCollections.getMyPubRings().encode(myPub);
-	        myPub.close();
-	        
 	        BufferedOutputStream pub = new BufferedOutputStream(new FileOutputStream("publicKeys.pub"));
 	        RingCollections.getPubRings().encode(pub);
 	        pub.close();
@@ -146,8 +145,21 @@ public class WindowMain extends JFrame {
 		JFileChooser messageFileChooser = new JFileChooser(".");
 		if (JFileChooser.APPROVE_OPTION == messageFileChooser.showOpenDialog(this)) {
 			File selectedFile = messageFileChooser.getSelectedFile();
-
-			String password = JOptionPane.showInputDialog(this, "Please enter password (or leave empty): ");
+			long keyId = Key.getDecryptKeyId(selectedFile);
+			if (keyId != 0) {
+				try {
+					PGPSecretKeyRing privKey = RingCollections.getPrivRings().getSecretKeyRing(keyId);
+					if (privKey == null) {
+						JOptionPane.showMessageDialog(this, "No matching key found", "Cannot decrypt", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					System.out.println(Long.toHexString(keyId));
+					String password = JOptionPane.showInputDialog(this, "Please enter password for " + privKey.getPublicKey().getUserIDs().next() + " - " + Long.toHexString(privKey.getPublicKey().getKeyID()) + ": ");
+					String ret = Key.receiveMessage(selectedFile, privKey, password);
+				} catch (PGPException e) {
+					e.printStackTrace();
+				}
+			}
 			// TODO @gavantee: Imas fajl, imas password, sacuvaj fajl koristeci 
 			// JFileChooser decodedMsgFileChooser = new JFileChooser(".");
 			// decodedMsgFileChooser.showSaveDialog(this)

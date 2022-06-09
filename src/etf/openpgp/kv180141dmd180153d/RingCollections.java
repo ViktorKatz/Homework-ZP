@@ -25,16 +25,11 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 public class RingCollections {
 	private static PGPSecretKeyRingCollection privRings;
 	private static PGPPublicKeyRingCollection pubRings;
-	private static PGPPublicKeyRingCollection myPubRings;
 	
 	public static void init() {
 		try {
             privRings = new PGPSecretKeyRingCollection(
             	PGPUtil.getDecoderStream(new FileInputStream("myKeys")),
-            	new BcKeyFingerprintCalculator()
-            );
-            myPubRings = new PGPPublicKeyRingCollection(
-            	PGPUtil.getDecoderStream(new FileInputStream("myKeys.pub")),
             	new BcKeyFingerprintCalculator()
             );
             pubRings = new PGPPublicKeyRingCollection(
@@ -43,7 +38,6 @@ public class RingCollections {
             );
 			
 		} catch (IOException | PGPException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -54,7 +48,7 @@ public class RingCollections {
 	
 	public static void addPrivKey(PGPSecretKeyRing privRing, PGPPublicKeyRing pubRing) {
 		privRings = PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
-		//pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
+		pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
 	}
 	
 	
@@ -66,18 +60,12 @@ public class RingCollections {
 		return pubRings;
 	}
 	
-	public static PGPPublicKeyRingCollection getMyPubRings() {
-		return myPubRings;
-	}
-	
 	public static void remove(long[] ids, boolean priv) {
 		if (priv) {
 			for (long id : ids) {
 				try {
 					privRings = PGPSecretKeyRingCollection.removeSecretKeyRing(privRings, privRings.getSecretKeyRing(id));
-					//myPubRings = PGPPublicKeyRingCollection.removePublicKeyRing(myPubRings, myPubRings.getPublicKeyRing(id));
 				} catch (PGPException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}			
 			}
@@ -85,10 +73,8 @@ public class RingCollections {
 		else {
 			for (long id : ids) {
 				try {
-					//myPubRings = PGPPublicKeyRingCollection.removePublicKeyRing(myPubRings, myPubRings.getPublicKeyRing(id));
 					pubRings = PGPPublicKeyRingCollection.removePublicKeyRing(pubRings, pubRings.getPublicKeyRing(id));
 				} catch (PGPException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -98,10 +84,11 @@ public class RingCollections {
 	public static void exportPubFromPriv(long id, File selectedFile) {
         try (ArmoredOutputStream out = new ArmoredOutputStream(
                 new FileOutputStream(selectedFile))) {
-        	List<PGPPublicKey> keys = new ArrayList<>();
-        	keys.add(privRings.getSecretKeyRing(id).getPublicKey());
-        	PGPPublicKeyRing ring = new PGPPublicKeyRing(keys);
-        	ring.encode(out);
+        	//List<PGPPublicKey> keys = new ArrayList<>();
+        	//keys.add(privRings.getSecretKeyRing(id).getPublicKey());
+        	//PGPPublicKeyRing ring = new PGPPublicKeyRing(keys);
+        	//ring.encode(out);
+        	privRings.getSecretKeyRing(id).getPublicKey().encode(out);
         } catch (IOException | PGPException e) {
             e.printStackTrace();
         }
@@ -149,6 +136,7 @@ public class RingCollections {
 				PGPUtil.getDecoderStream(new FileInputStream(file)),
 				new BcKeyFingerprintCalculator());
 			privRings = PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
+
 		} catch (IOException | PGPException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,7 +170,7 @@ public class RingCollections {
 		for (int i = 0; i < id; ++i) iter.next();
 		return iter.next();
 	}
-	
+
 	public static PGPPublicKeyRing getPubRing(int id) {
 		Iterator<PGPPublicKeyRing> iter = pubRings.getKeyRings();
 		for (int i = 0; i < id; ++i) iter.next();
