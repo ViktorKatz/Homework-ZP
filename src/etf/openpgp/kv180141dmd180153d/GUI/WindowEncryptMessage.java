@@ -98,6 +98,7 @@ public class WindowEncryptMessage extends JDialog {
 			            SymmAlgChoice.getSelectedIndex(),
 			            password
 		        );
+		        this.dispose();
 			}
 		});
 
