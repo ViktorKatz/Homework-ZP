@@ -5,11 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
@@ -50,7 +52,7 @@ public class RingCollections {
 	
 	public static void addPrivKey(PGPSecretKeyRing privRing, PGPPublicKeyRing pubRing) {
 		privRings = PGPSecretKeyRingCollection.addSecretKeyRing(privRings, privRing);
-		myPubRings = PGPPublicKeyRingCollection.addPublicKeyRing(myPubRings, pubRing);
+		pubRings = PGPPublicKeyRingCollection.addPublicKeyRing(pubRings, pubRing);
 	}
 	
 	
@@ -152,19 +154,35 @@ public class RingCollections {
 		return true;
 	}
 	
-	public static Vector<PGPPublicKeyRing> getPubVec() {
-		Vector<PGPPublicKeyRing> pubVec = new Vector<PGPPublicKeyRing>();
-		for (PGPPublicKeyRing ring : pubRings) {
-			pubVec.add(ring);
+	public static Vector<String> getPubVec() {
+		Vector<String> pubVec = new Vector<String>();
+		Iterator<PGPPublicKeyRing> iter = pubRings.getKeyRings();
+		while(iter.hasNext()) {
+			PGPPublicKeyRing ring = iter.next();
+			pubVec.add("" + Long.toHexString(ring.getPublicKey().getKeyID()) + " - " + ring.getPublicKey().getUserIDs().next());
 		}
 		return pubVec;
 	}
 	
-	public static Vector<PGPSecretKeyRing> getPrivVec() {
-		Vector<PGPSecretKeyRing> privVec = new Vector<PGPSecretKeyRing>();
-		for (PGPSecretKeyRing ring : privRings) {
-			privVec.add(ring);
+	public static Vector<String> getPrivVec() {
+		Vector<String> privVec = new Vector<String>();
+		Iterator<PGPSecretKeyRing> iter = privRings.getKeyRings();
+		while(iter.hasNext()) {
+			PGPSecretKeyRing ring = iter.next();
+			privVec.add("" + Long.toHexString(ring.getPublicKey().getKeyID()) + " - " + ring.getPublicKey().getUserIDs().next());
 		}
 		return privVec;
+	}
+
+	public static PGPSecretKeyRing getPrivRing(int id) {
+		Iterator<PGPSecretKeyRing> iter = privRings.getKeyRings();
+		for (int i = 0; i < id; ++i) iter.next();
+		return iter.next();
+	}
+	
+	public static PGPPublicKeyRing getPubRing(int id) {
+		Iterator<PGPPublicKeyRing> iter = pubRings.getKeyRings();
+		for (int i = 0; i < id; ++i) iter.next();
+		return iter.next();
 	}
 }

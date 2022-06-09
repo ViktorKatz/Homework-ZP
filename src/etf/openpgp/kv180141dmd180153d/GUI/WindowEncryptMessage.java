@@ -23,6 +23,9 @@ import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
 
 import etf.openpgp.kv180141dmd180153d.Key;
+import etf.openpgp.kv180141dmd180153d.algorithms.CAST5;
+import etf.openpgp.kv180141dmd180153d.algorithms.ISymmetricKeyAlgorithm;
+import etf.openpgp.kv180141dmd180153d.algorithms.ThreeDESwithEDE;
 
 public class WindowEncryptMessage extends JDialog {
 
@@ -36,15 +39,17 @@ public class WindowEncryptMessage extends JDialog {
 	private final JTextField inputFilePeek = new JTextField("Select file to encrypt");
 	private File selectedFile = null;
 
-	private JComboBox<PGPSecretKeyRing> signKeysComboBox;
-	private JList<PGPPublicKeyRing> encryptKeysList;
+	private JComboBox<String> signKeysComboBox;
+	private JList<String> encryptKeysList;
 
 	private JCheckBox compressCheckBox = new JCheckBox("Compress message");
 	private JCheckBox convertToRadixCheckBox = new JCheckBox("Convert to radix-64");
 
 	private final JButton sendToFileButton = new JButton("Send (export to file)");
+	
+	private JComboBox SymmAlgChoice = new JComboBox<ISymmetricKeyAlgorithm>(new ISymmetricKeyAlgorithm[] {new ThreeDESwithEDE(), new CAST5()} );
 
-	public WindowEncryptMessage(JFrame mainWindow, Vector<PGPPublicKeyRing> pubRings, Vector<PGPSecretKeyRing> privRings) {
+	public WindowEncryptMessage(JFrame mainWindow, Vector<String> pubRings, Vector<String> privRings) {
 		super(mainWindow, true);
 		this.setLayout(new GridLayout(5, 2));
 
@@ -57,17 +62,17 @@ public class WindowEncryptMessage extends JDialog {
 		});
 		inputFilePeek.setEditable(false);
 
-		encryptKeysList = new JList<PGPPublicKeyRing>(pubRings);
+		encryptKeysList = new JList<String>(pubRings);
 		JScrollPane encryptKeysPane = new JScrollPane(encryptKeysList);
 
-		Vector<PGPSecretKeyRing> availableSignKeysWithNone = new Vector<PGPSecretKeyRing>(privRings);
-		availableSignKeysWithNone.add(0, null);
-		signKeysComboBox = new JComboBox<PGPSecretKeyRing>(privRings);
+		Vector<String> availableSignKeysWithNone = new Vector<String>(privRings);
+		availableSignKeysWithNone.add(0, "None");
+		signKeysComboBox = new JComboBox<String>(availableSignKeysWithNone);
 
 		sendToFileButton.addActionListener(e -> {
 			File selectedFile = this.selectedFile;
-			PGPSecretKeyRing privateKey = (PGPSecretKeyRing) signKeysComboBox.getSelectedItem();
-			List<PGPPublicKeyRing> publicKeys = encryptKeysList.getSelectedValuesList();
+			int privateKey = signKeysComboBox.getSelectedIndex();
+			int[] publicKeys = encryptKeysList.getSelectedIndices();
 			boolean compressZip = compressCheckBox.isSelected();
 			boolean convertToRadix = convertToRadixCheckBox.isSelected();
 			
@@ -76,19 +81,27 @@ public class WindowEncryptMessage extends JDialog {
 				return;
 			}
 			
-			if(null != privateKey) {
-				String password = JOptionPane.showInputDialog(this, "Password for " + signKeysComboBox.getSelectedItem());
+			String password = "";
+			if(privateKey > 0) {
+				password = JOptionPane.showInputDialog(this, "Password for " + signKeysComboBox.getSelectedItem());
 				//if(!privateKey.checkPassword(password)) {
 					//JOptionPane.showMessageDialog(this, "Wrong password!");
 					//return;
 				//}
 			}
-			
-			// TODO @gavantee: uradi nesto sa ovim varijablama koje sam ostavio na pocetku funkcije.
-			
+	
 			JFileChooser outputFileChooser = new JFileChooser(".");
 			if (JFileChooser.APPROVE_OPTION == outputFileChooser.showSaveDialog(this)) {
-				//throw new NotImplementedException(); // TODO @gavantee: Enkriptovanu poruku sacuvaj u fajl
+		        boolean res = Key.sendMessage(
+		        		selectedFile,
+		        		outputFileChooser.getSelectedFile(),
+			            privateKey,
+			            publicKeys,
+			            compressZip,
+			            convertToRadix,
+			            SymmAlgChoice.getSelectedIndex(),
+			            password
+		        );
 			}
 		});
 
@@ -100,7 +113,7 @@ public class WindowEncryptMessage extends JDialog {
 		this.add(signKeysComboBox);
 		this.add(compressCheckBox);
 		this.add(convertToRadixCheckBox);
-		this.add(new JLabel(""));
+		this.add(SymmAlgChoice);
 		this.add(sendToFileButton);
 
 		this.setSize(windowX, windowY);

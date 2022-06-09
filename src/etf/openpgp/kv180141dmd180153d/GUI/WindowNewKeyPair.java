@@ -37,9 +37,7 @@ public class WindowNewKeyPair extends JDialog {
 		return true;
 	}
 
-	private void saveKey() {		
-		// TODO @gavantee: Imas fieldove, uradi nesto
-		
+	private void saveKey() {				
 		WindowMain mainWindow = (WindowMain) this.getParent();
 		Key.newKey(
 			emailField.getText(),
@@ -48,7 +46,6 @@ public class WindowNewKeyPair extends JDialog {
 		);
 		
 		this.dispose();
-		// throw new NotImplementedException(); // TODO @gavantee: delete this when done
 	}
 
 	public WindowNewKeyPair(JFrame mainWindow) {
